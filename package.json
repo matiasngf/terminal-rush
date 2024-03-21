@@ -1,0 +1,36 @@
+{
+  "name": "terminal-rush-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "devAll": "turbo run dev",
+    "dev": "pnpm core:dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "core:dev": "turbo run dev --filter=terminal-rush",
+    "core:build": "turbo run build --filter=terminal-rush",
+    "compiler:dev": "turbo run dev --filter=@terminal-rush/compiler",
+    "compiler:build": "turbo run build --filter=@terminal-rush/compiler",
+    "sandbox": "cd ./apps/sandbox && pnpm dev"
+  },
+  "devDependencies": {
+    "@terminal-rush/eslint-config-custom": "workspace:*",
+    "prettier": "latest",
+    "turbo": "latest",
+    "autoprefixer": "^10.4.12",
+    "postcss": "^8.4.16",
+    "tailwindcss": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "packageManager": "pnpm@7.33.7+sha256.d1581d46ed10f54ff0cbdd94a2373b1f070202b0fbff29f27c2ce01460427043"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@terminal-rush/sandbox",
+  "version": "0.0.1",
+  "description": "Sandbox for Terminal Rush",
+  "scripts": {
+    "dev": "DEV=true terminal-rush start",
+    "devtools": "npx react-devtools"
+  },
+  "dependencies": {
+    "terminal-rush": "workspace:*"
+  }
+}

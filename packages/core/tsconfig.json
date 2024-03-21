@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "rootDir": ".",
+    "baseUrl": "./",
+    "target": "ES2019", // Node.js 12
+    "lib": [
+      "ES2019",
+      "dom",
+    ],
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@router": [
+        ".rush-compiler/project-routes"
+      ],
+      "ink": [
+        "node_modules/ink/build/index.d.ts"
+      ]
+    },
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "rollup.config.js",
+    ".rush-compiler/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+  ]
+}

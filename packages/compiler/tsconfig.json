@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "typeRoots": [
+      "src/declarations.d.ts",
+      "./node_modules/@types"
+    ],
+    "module": "es6",
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "baseUrl": "./",
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "test/**/*"
+  ]
+}

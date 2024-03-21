@@ -1,0 +1,25 @@
+import { create } from "zustand";
+
+export const routes = {
+{{#each routes}}
+  "{{this.routeUrl}}": () => import("../{{this.importPath}}"),
+{{/each}}
+} as const;
+
+export type ScenePath = keyof typeof routes;
+
+export const paths = Object.keys(routes) as ScenePath[];
+
+export interface RouterStore {
+  currentScene: ScenePath | null;
+}
+
+export const useRouter = create<RouterStore>(() => {
+  return {
+    currentScene: null,
+  }
+})
+
+export const navigate = (scene: ScenePath) => {
+  useRouter.setState({ currentScene: scene });
+}
