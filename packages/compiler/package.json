@@ -8,6 +8,7 @@
     "dev": "webpack --mode=development --watch"
   },
   "dependencies": {
+    "@terminal-rush/virtual-app": "workspace:^0.0.0",
     "babel-loader": "^9.1.2",
     "chalk": "^5.2.0",
     "chokidar": "^3.5.3",
@@ -16,6 +17,7 @@
     "del": "^7.0.0",
     "fork-ts-checker-webpack-plugin": "^8.0.0",
     "handlebars": "^4.7.7",
+    "symlink-dir": "^5.2.1",
     "ts-loader": "^9.4.2",
     "webpack": "^5.76.1",
     "webpack-node-externals": "^3.0.0",

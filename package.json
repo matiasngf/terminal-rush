@@ -12,10 +12,12 @@
     "dev": "pnpm core:dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "core:dev": "turbo run dev --filter=terminal-rush",
+    "core": "turbo run dev --filter=terminal-rush",
     "core:build": "turbo run build --filter=terminal-rush",
-    "compiler:dev": "turbo run dev --filter=@terminal-rush/compiler",
+    "compiler": "turbo run dev --filter=@terminal-rush/compiler",
     "compiler:build": "turbo run build --filter=@terminal-rush/compiler",
+    "virtual-app": "turbo run dev --filter=@terminal-rush/virtual-app",
+    "virtual-app:build": "turbo run build --filter=@terminal-rush/virtual-app",
     "sandbox": "cd ./apps/sandbox && pnpm dev"
   },
   "devDependencies": {

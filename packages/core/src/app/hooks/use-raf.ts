@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 
 interface UseRafStore {
-  rafCallbacks: Record<string, () => void>;
+  rafCallbacks: Record<string, () => void | Promise<void>>;
   registerRafCallback: (callback: () => void) => string;
   unregisterRafCallback: (id: string) => void;
 }
@@ -27,26 +27,35 @@ const useRafStore = create<UseRafStore>((set, get) => {
   return store;
 })
 
-const raf = function (callback) {
-  window.setTimeout(callback, 1000 / 60);
-};
-
 export const useGlobalRafRunner = () => {
   useEffect(() => {
+
+    // 30fps
+    const rafTime = 1000 / 30;
 
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    const rafHandler = () => {
+    const rafHandler = async () => {
+      const startTime = performance.now();
       if (signal.aborted) return;
       const callbacks = useRafStore.getState().rafCallbacks;
+      // TODO they should be executed in parallel
       for (const id in callbacks) {
-        callbacks[id]();
+        if (signal.aborted) return;
+        if (callbacks[id] instanceof Promise) {
+          await callbacks[id]();
+        } else {
+          callbacks[id]()
+        }
       }
-      raf(rafHandler);
+      const endTime = performance.now();
+      const timeTook = endTime - startTime;
+      const timeToWait = Math.max(0, rafTime - timeTook);
+      setTimeout(rafHandler, timeToWait);
     }
 
-    raf(rafHandler);
+    setTimeout(rafHandler, 0)
 
     return () => {
       abortController.abort();
@@ -61,7 +70,8 @@ export const useRaf = (callback: () => void) => {
     return () => {
       useRafStore.getState().unregisterRafCallback(id);
     }
-  }, [callback])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 }
 
 export const createRaf = (callback: () => void) => {

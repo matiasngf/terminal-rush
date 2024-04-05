@@ -1,8 +1,10 @@
 import path from 'path';
-import { Configuration, IgnorePlugin, NormalModuleReplacementPlugin, ProvidePlugin } from "webpack";
+import { Configuration, IgnorePlugin, ProvidePlugin } from "webpack";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import nodeExternals from "webpack-node-externals";
+import CopyPlugin from "copy-webpack-plugin";
+import { CreateSymlinkPlugin } from './symlink-plugin';
 
 export type CompileMode = "development" | "production";
 
@@ -30,6 +32,9 @@ const libsToExcludeFromCompilation = [
   "jsdom",
   // "node-canvas-webgl/lib/index",
   "three",
+  "puppeteer",
+  "vite",
+  "express"
 ]
 
 const loggedLibs = new Set();
@@ -115,6 +120,29 @@ export const generateWebpackConfig = ({
         "React": "react",
       }),
     ]
+  }
+
+  if (mode === 'production') {
+    // Copy the build of the headless app to the output dir as static files
+    config.plugins.push(
+      new CopyPlugin({
+        patterns: [
+          {
+            from: path.resolve(("../virtual-app/"), "dist"),
+            to: path.join(outputDir, "virtual-app"),
+          }
+        ]
+      })
+    )
+  } else {
+    // on dev mode just create a symlink to the virtual app
+    config.plugins.push(
+      new CreateSymlinkPlugin({
+        target: path.resolve(path.join("../virtual-app/", "dist")),
+        symlink: path.resolve(outputDir, "virtual-app"),
+        type: "dir"
+      })
+    )
   }
 
 

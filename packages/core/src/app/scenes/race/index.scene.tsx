@@ -1,15 +1,17 @@
-import { useOnce } from "@/app/hooks/use-once";
-import { createRaf } from "@/app/hooks/use-raf";
-import { useStdoutDimensions } from "@/app/hooks/use-stdout-dimentions";
-import { asciify } from "@/app/lib/asciify";
 import { Box, Text, useInput } from "ink";
 
-import { createCanvas } from "node-canvas-webgl";
-import { useMemo, useState } from "react";
-import * as THREE from "three";
+import { useMemo, useRef, useState } from "react";
+import { useOnce } from "@/app/hooks/use-once";
+import { startServer } from "./start-server";
+import puppeteer, { Page } from "puppeteer";
+import { useStdoutDimensions } from "@/app/hooks/use-stdout-dimentions";
+import { asciify } from "@/app/lib/asciify";
+import { useRaf } from "@/app/hooks/use-raf";
 
 const Scene = () => {
   const [src, setSrc] = useState<string | null>(null);
+  const sizeRef = useMemo(() => ({ width: 10, height: 10 }), []);
+  const pageRef = useRef<Page | null>(null);
 
   useInput((_input, key) => {
     if (key.escape) {
@@ -17,93 +19,48 @@ const Scene = () => {
     }
   });
 
-  const sizeRef = useMemo(() => ({ width: 10, height: 10 }), []);
-
-  const canvas = useMemo(() => createCanvas(10, 10), []);
-  const renderer = useMemo(
-    () => new THREE.WebGLRenderer({ canvas, antialias: true }),
-    [canvas]
-  );
-  const camera = useMemo(
-    () => new THREE.PerspectiveCamera(50, 2, 0.1, 100),
-    []
-  );
-
   useStdoutDimensions(([width, height]) => {
+    // Since characters all two times taller, the rendered height should be doubled
     const realHeight = height * 2;
-
-    canvas.width = width;
-    canvas.height = realHeight;
-    camera.aspect = width / realHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, realHeight);
 
     sizeRef.width = width;
     sizeRef.height = realHeight;
+    pageRef.current?.setViewport({
+      width: width * 7,
+      height: realHeight * 7,
+    });
   });
 
-  useOnce(() => {
-    renderer.shadowMap.enabled = true;
+  useOnce(async () => {
+    // start server
+    const [_server, port] = await startServer(4001);
+    // navigate to page
+    const browser = await puppeteer.launch({});
+    const page = await browser.newPage();
+    await page.goto(`http://localhost:${port}`, { waitUntil: "networkidle2" });
+    await page.waitForSelector("h1");
 
-    const scene = new THREE.Scene();
-
-    const cube = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: 0x00ff00 })
-    );
-    cube.position.y = 1;
-    cube.castShadow = true;
-    scene.add(cube);
-
-    const planeGeometry = new THREE.PlaneGeometry(20, 20, 32, 32);
-    planeGeometry.rotateX(-Math.PI / 2);
-    const planeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.receiveShadow = true;
-    scene.add(plane);
-
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
-
-    const sun = new THREE.DirectionalLight(0xffffff, 1);
-    sun.castShadow = true;
-    sun.position.set(1, 1, 1);
-    sun.target.position.set(0, 0, 0);
-    scene.add(sun);
-
-    camera.position.z = 3;
-    camera.position.y = 1;
-    camera.lookAt(0, 1, 0);
-
-    const deleteRaf = createRaf(() => {
-      // Render frame
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
-      const buff = Buffer.from(canvas.toDataURL().split(",")[1], "base64");
-
-      // transform into ascii
-      asciify(
-        buff,
-        {
-          width: sizeRef.width,
-          height: sizeRef.height,
-          fit: "cover",
-          format: "string",
-        },
-        (err, ascii) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          setSrc(ascii);
-        }
-      );
+    page.setViewport({
+      width: sizeRef.width * 7,
+      height: sizeRef.height * 7,
     });
 
-    return () => {
-      deleteRaf();
-    };
+    // page loaded
+    pageRef.current = page;
+  });
+
+  useRaf(async () => {
+    if (!pageRef.current) return;
+    const buff = await pageRef.current.screenshot();
+
+    const ascii = await asciify(buff, {
+      width: sizeRef.width,
+      height: sizeRef.height,
+      fit: "cover",
+      format: "string",
+    });
+
+    setSrc(ascii);
   });
 
   return <Box>{src ? <Text>{src}</Text> : <Text>Starting...</Text>}</Box>;

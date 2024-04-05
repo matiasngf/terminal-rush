@@ -29,7 +29,7 @@ interface NewDims {
   height: number;
 }
 
-export function asciify(path: string | Buffer, second: AsciifyOptions | Function, third?: Function) {
+export function asciify<T extends string | string[] = string>(path: string | Buffer, second: AsciifyOptions | Function, third?: Function): Promise<T> {
   let opts: AsciifyOptions = {};
   let callback: Function | undefined;
 
