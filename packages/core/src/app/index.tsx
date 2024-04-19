@@ -3,17 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useGlobalRafRunner } from "./hooks/use-raf";
 import { useRouter, routes, ScenePath, navigate } from "@router";
 
-// import { JSDOM } from "jsdom";
-// import { ResizeObserver } from "@juggle/resize-observer";
-
-// const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
-// const window = dom.window;
-// const { document } = window;
-// global.window = window;
-// global.window.ResizeObserver = ResizeObserver;
-// global.ResizeObserver = ResizeObserver;
-// global.document = document;
-
 const DefaultScene = () => <></>;
 
 const Scene = () => {

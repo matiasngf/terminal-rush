@@ -11,6 +11,9 @@
     },
     "dev": {
       "cache": false
+    },
+    "serve": {
+      "cache": false
     }
   },
   "globalEnv": ["NODE_ENV"]

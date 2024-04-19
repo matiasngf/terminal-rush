@@ -1,0 +1,61 @@
+import { useShallow } from "zustand/react/shallow"
+import { ControlKey, Controls, useConnector } from "./connector"
+import { useEffect } from "react"
+
+export function useControls<T extends ControlKey>(control: T): Controls[T];
+export function useControls<T extends ControlKey[]>(control: T): { [K in T[number]]: Controls[K] };
+export function useControls<T extends ControlKey | ControlKey[]>(control: T) {
+  return useConnector(
+    useShallow(s => {
+      if (Array.isArray(control)) {
+        const s = {} as T extends ControlKey[] ? { [K in T[number]]: Controls[K] } : never
+        control.forEach((c) => {
+          Object.assign(s, { [c]: s[c] })
+        })
+        return s
+      }
+      return s.controls[control as ControlKey] as T extends ControlKey ? Controls[T] : never
+    }
+    ))
+}
+
+export const setControl = useConnector.getState().setControl;
+
+/** Keyboard controls logic */
+
+const keyControlMap = {
+  ' ': 'brake',
+  ArrowDown: 'backward',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  ArrowUp: 'forward',
+  a: 'left',
+  d: 'right',
+  r: 'reset',
+  s: 'backward',
+  w: 'forward',
+} as const satisfies Record<string, ControlKey>
+
+type KeyCode = keyof typeof keyControlMap
+const keyCodes = Object.keys(keyControlMap) as KeyCode[]
+const isKeyCode = (v: unknown): v is KeyCode => keyCodes.includes(v as KeyCode)
+
+export function useKeyControls() {
+
+  useEffect(() => {
+    const handleKeydown = ({ key }: KeyboardEvent) => {
+      if (!isKeyCode(key)) return
+      setControl(keyControlMap[key], true)
+    }
+    window.addEventListener('keydown', handleKeydown)
+    const handleKeyup = ({ key }: KeyboardEvent) => {
+      if (!isKeyCode(key)) return
+      setControl(keyControlMap[key], false)
+    }
+    window.addEventListener('keyup', handleKeyup)
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+      window.removeEventListener('keyup', handleKeyup)
+    }
+  }, [])
+}

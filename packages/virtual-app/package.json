@@ -7,19 +7,30 @@
     "dist"
   ],
   "scripts": {
-    "dev-server": "vite",
+    "serve": "vite",
     "build": "tsc && vite build",
     "dev": "nodemon",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/cannon": "^6.6.0",
+    "@react-three/drei": "^9.105.1",
+    "@react-three/fiber": "^8.16.1",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.3",
+    "sort-by": "^1.2.0",
+    "three": "^0.163.0",
+    "three-stdlib": "^2.29.6",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@types/three": "^0.162.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react-swc": "^3.5.0",

@@ -25,9 +25,12 @@ const Scene = () => {
 
     sizeRef.width = width;
     sizeRef.height = realHeight;
+
+    const aspect = sizeRef.width / sizeRef.height;
+
     pageRef.current?.setViewport({
-      width: width * 7,
-      height: realHeight * 7,
+      width: Math.floor(aspect * 800),
+      height: 800,
     });
   });
 
@@ -37,12 +40,16 @@ const Scene = () => {
     // navigate to page
     const browser = await puppeteer.launch({});
     const page = await browser.newPage();
+
     await page.goto(`http://localhost:${port}`, { waitUntil: "networkidle2" });
-    await page.waitForSelector("h1");
+    await page.waitForSelector("canvas");
+    // Wait for bridge to be ready
+    await page.waitForFunction('typeof window.connector !== "undefined"');
+    const aspect = sizeRef.width / sizeRef.height;
 
     page.setViewport({
-      width: sizeRef.width * 7,
-      height: sizeRef.height * 7,
+      width: Math.floor(aspect * 800),
+      height: 800,
     });
 
     // page loaded
