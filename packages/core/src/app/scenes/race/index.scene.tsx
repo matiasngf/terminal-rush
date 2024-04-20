@@ -41,7 +41,9 @@ const Scene = () => {
     const browser = await puppeteer.launch({});
     const page = await browser.newPage();
 
-    await page.goto(`http://localhost:${port}`, { waitUntil: "networkidle2" });
+    await page.goto(`http://localhost:${port}/game`, {
+      waitUntil: "networkidle2",
+    });
     await page.waitForSelector("canvas");
     // Wait for bridge to be ready
     await page.waitForFunction('typeof window.connector !== "undefined"');
