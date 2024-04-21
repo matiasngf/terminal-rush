@@ -34,7 +34,8 @@ const libsToExcludeFromCompilation = [
   "three",
   "puppeteer",
   "vite",
-  "express"
+  "express",
+  "iohook"
 ]
 
 const loggedLibs = new Set();
@@ -55,7 +56,7 @@ export const generateWebpackConfig = ({
 }: GenerateWebpackConfigOptions) => {
   const config: Configuration = {
     entry: path.resolve("./src/cli.ts"),
-    mode,
+    mode: "development",
     watch: mode === "development",
     target: 'node',
     externalsPresets: { node: true },
@@ -124,12 +125,15 @@ export const generateWebpackConfig = ({
 
   if (mode === 'production') {
     // Copy the build of the headless app to the output dir as static files
+    const fromStr = path.resolve(("../virtual-app/"), "dist")
     config.plugins.push(
       new CopyPlugin({
         patterns: [
           {
-            from: path.resolve(("../virtual-app/"), "dist"),
-            to: path.join(outputDir, "virtual-app"),
+            from: "**/*",
+            context: fromStr,
+            to: 'virtual-app',
+
           }
         ]
       })

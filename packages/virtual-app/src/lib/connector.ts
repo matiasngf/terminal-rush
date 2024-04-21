@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { Subscribable, subscribable } from "./subscribable";
 
 export interface Controls {
   forward: boolean;
@@ -11,17 +12,43 @@ export interface Controls {
 
 export type ControlKey = keyof Controls;
 
+export interface Actions {
+  forward: () => void;
+  backward: () => void;
+  left: () => void;
+  right: () => void;
+  brake: () => void;
+  reset: () => void;
+}
+
+export type ActionKey = keyof Actions;
+
+export interface Subscribables {
+  forward: Subscribable;
+  left: Subscribable;
+  right: Subscribable;
+}
+
 interface ConnectorStore {
   canvas: HTMLCanvasElement | null;
   controls: Controls
   controlsRef: {
     current: Controls;
   }
+  subscribable: Subscribables;
+  actions: Actions;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setControl: <T extends ControlKey = any>(control: T, value: Controls[T]) => void;
 }
 
+export type UseConnector = typeof useConnector;
+
 export const useConnector = create<ConnectorStore>((set, get) => {
+
+  const forward = subscribable()
+  const left = subscribable()
+  const right = subscribable()
+
   const controlsDefault = {
     forward: false,
     backward: false,
@@ -30,6 +57,8 @@ export const useConnector = create<ConnectorStore>((set, get) => {
     brake: false,
     reset: false
   } satisfies Controls
+
+
   return {
     canvas: null,
     controls: controlsDefault,
@@ -44,6 +73,25 @@ export const useConnector = create<ConnectorStore>((set, get) => {
           }
         }
       });
+    },
+    subscribable: {
+      forward,
+      left,
+      right,
+    },
+    actions: {
+      forward: () => {
+        forward.getCallbacks().forEach((cb) => cb());
+      },
+      left: () => {
+        left.getCallbacks().forEach((cb) => cb());
+      },
+      right: () => {
+        right.getCallbacks().forEach((cb) => cb());
+      },
+      backward: () => { },
+      brake: () => { },
+      reset: () => { },
     }
   } as const satisfies ConnectorStore;
 });

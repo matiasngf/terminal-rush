@@ -17,7 +17,7 @@
     "compiler": "turbo run dev --filter=@terminal-rush/compiler",
     "compiler:build": "turbo run build --filter=@terminal-rush/compiler",
     "virtual-app": "turbo run serve --filter=@terminal-rush/virtual-app",
-    "virtual-app:dev": "turbo run dev --filter=@terminal-rush/virtual-app",
+    "virtual-app:watch": "turbo run dev --filter=@terminal-rush/virtual-app",
     "virtual-app:build": "turbo run build --filter=@terminal-rush/virtual-app",
     "sandbox": "cd ./apps/sandbox && pnpm dev"
   },

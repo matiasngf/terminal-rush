@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { MainScene } from "./main-scene";
-import { useConnector } from "../lib/connector";
+import { useConnector } from "../../../lib/connector";
 
 export const GameCanvas = () => {
   return (

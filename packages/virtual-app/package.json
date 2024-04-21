@@ -3,9 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "serve": "vite",
     "build": "tsc && vite build",
@@ -21,6 +18,7 @@
     "match-sorter": "^6.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-merge-refs": "^2.1.1",
     "react-router-dom": "^6.22.3",
     "sort-by": "^1.2.0",
     "three": "^0.163.0",

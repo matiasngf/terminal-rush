@@ -182,6 +182,7 @@ importers:
       nodemon: ^3.0.1
       react: ^18.2.0
       react-dom: ^18.2.0
+      react-merge-refs: ^2.1.1
       react-router-dom: ^6.22.3
       sort-by: ^1.2.0
       three: ^0.163.0
@@ -197,6 +198,7 @@ importers:
       match-sorter: 6.3.4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-merge-refs: 2.1.1
       react-router-dom: 6.22.3_biqbaboplfbrettd7655fr4n2y
       sort-by: 1.2.0
       three: 0.163.0
@@ -7197,6 +7199,10 @@ packages:
 
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+    dev: false
+
+  /react-merge-refs/2.1.1:
+    resolution: {integrity: sha512-jLQXJ/URln51zskhgppGJ2ub7b2WFKGq3cl3NYKtlHoTG+dN2q7EzWrn3hN3EgPsTMvpR9tpq5ijdp7YwFZkag==}
     dev: false
 
   /react-reconciler/0.27.0_react@18.2.0:

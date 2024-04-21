@@ -72,6 +72,20 @@ const Scene = () => {
     setSrc(ascii);
   });
 
+  useInput((_input, key) => {
+    if (!pageRef.current) return;
+    if (key.leftArrow) {
+      pageRef.current.evaluate(() => {
+        window.connector.getState().actions.left();
+      });
+    }
+    if (key.rightArrow) {
+      pageRef.current.evaluate(() => {
+        window.connector.getState().actions.right();
+      });
+    }
+  });
+
   return <Box>{src ? <Text>{src}</Text> : <Text>Starting...</Text>}</Box>;
 };
 
