@@ -1,11 +1,14 @@
 import { useRef } from "react";
 import { Car } from "../car";
-import { Mesh } from "three";
+import { Group } from "three";
 import { useConnector } from "../../../../lib/connector";
 import { useSubscribe } from "../../../../lib/subscribable";
 
+/** Max lines on the road */
+export const LINES = 5;
+
 export const Player = () => {
-  const ref = useRef<Mesh | null>(null);
+  const ref = useRef<Group | null>(null);
 
   const left = useConnector((s) => s.subscribable.left);
   const right = useConnector((s) => s.subscribable.right);

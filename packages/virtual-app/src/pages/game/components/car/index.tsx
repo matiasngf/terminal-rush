@@ -1,12 +1,14 @@
-import { MeshProps } from "@react-three/fiber";
+import { GroupProps } from "@react-three/fiber";
 import { forwardRef } from "react";
-import type { Mesh } from "three";
+import type { Group } from "three";
 
-export const Car = forwardRef<Mesh, MeshProps>((props, ref) => {
+export const Car = forwardRef<Group, GroupProps>((props, ref) => {
   return (
-    <mesh ref={ref} {...props}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="orange" />
-    </mesh>
+    <group ref={ref} {...props}>
+      <mesh position={[0, 0.5, 0]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="orange" />
+      </mesh>
+    </group>
   );
 });

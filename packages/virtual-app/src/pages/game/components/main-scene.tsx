@@ -1,9 +1,11 @@
 import { Track } from "./track";
-import { useKeyControls } from "../../../lib/use-controls";
 import { Player } from "./player";
+import { Debug } from "./debug";
+import { useSearchParams } from "react-router-dom";
 
 export const MainScene = () => {
-  useKeyControls();
+  const [searchParams] = useSearchParams();
+
   return (
     <>
       <ambientLight intensity={Math.PI / 2} />
@@ -17,6 +19,7 @@ export const MainScene = () => {
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <Track />
       <Player />
+      {searchParams.has("debug") && <Debug />}
     </>
   );
 };

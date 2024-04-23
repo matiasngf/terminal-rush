@@ -36,7 +36,17 @@ const keyControlMap = {
   w: 'forward',
 } as const satisfies Record<string, ControlKey>
 
+
 type KeyCode = keyof typeof keyControlMap
+
+export const keyCallbacks: Partial<Record<ControlKey, () => void>> = {
+  left: () => {
+    useConnector.getState().actions.left()
+  },
+  right: () => {
+    useConnector.getState().actions.right()
+  },
+}
 const keyCodes = Object.keys(keyControlMap) as KeyCode[]
 const isKeyCode = (v: unknown): v is KeyCode => keyCodes.includes(v as KeyCode)
 
@@ -45,7 +55,11 @@ export function useKeyControls() {
   useEffect(() => {
     const handleKeydown = ({ key }: KeyboardEvent) => {
       if (!isKeyCode(key)) return
-      setControl(keyControlMap[key], true)
+      const control = keyControlMap[key]
+      setControl(control, true)
+      if (keyCallbacks[control]) {
+        keyCallbacks[control]!()
+      }
     }
     window.addEventListener('keydown', handleKeydown)
     const handleKeyup = ({ key }: KeyboardEvent) => {
