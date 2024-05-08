@@ -34,6 +34,5 @@
   },
   "dependencies": {
     "concurrently": "^7.6.0"
-  },
-  "packageManager": "pnpm@7.33.7+sha256.d1581d46ed10f54ff0cbdd94a2373b1f070202b0fbff29f27c2ce01460427043"
+  }
 }

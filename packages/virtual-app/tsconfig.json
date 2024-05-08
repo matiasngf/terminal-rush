@@ -24,6 +24,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
+  "types": [
+    "gsap/types"
+  ],
   "include": [
     "src/**/*"
   ],
