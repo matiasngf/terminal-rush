@@ -2,6 +2,7 @@ import { Track } from "./track";
 import { Player } from "./player";
 import { Debug } from "./debug";
 import { useSearchParams } from "react-router-dom";
+import { Road } from "./road";
 
 export const MainScene = () => {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,7 @@ export const MainScene = () => {
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <Track />
       <Player />
+      <Road />
       {searchParams.has("debug") && <Debug />}
     </>
   );

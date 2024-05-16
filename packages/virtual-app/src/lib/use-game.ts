@@ -4,7 +4,6 @@ export interface GameStore {
   currentLine: number;
   setLine: (line: number) => void;
   addLine: (ammount?: number) => void;
-
 }
 
 export const useGame = create<GameStore>((set) => {
