@@ -6,7 +6,7 @@ import { useSubscribe } from "../../../../lib/subscribable";
 
 import { useGame } from "../../../../lib/use-game";
 import { useFrame } from "@react-three/fiber";
-import { clampLerp, lerp, round } from "../../../../lib/math";
+import { clampLerp, lerp, normalizeDelta, round } from "../../../../lib/math";
 
 /** Max lines on the road */
 export const LINES = 5;
@@ -40,7 +40,7 @@ export const Player = () => {
   useFrame((_, delta) => {
     if (!carRef.current) return;
 
-    const normalizedDelta = round((1000 * delta) / 8, 4);
+    const normalizedDelta = normalizeDelta(delta);
 
     let difference =
       round(

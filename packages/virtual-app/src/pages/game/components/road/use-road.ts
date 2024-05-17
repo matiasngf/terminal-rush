@@ -1,8 +1,9 @@
 /** The road store will handle the obstacles that the player runs into. */
 import { create } from "zustand";
+import { getNewChunk } from "./get-chunk";
 
-export const CHUNK_SIZE = 20;
-export const TOTAL_CHUNKS = 10
+export const CHUNK_SIZE = 50;
+export const TOTAL_CHUNKS = 5
 
 export interface ChunnkProps {
   id: number;
@@ -21,8 +22,10 @@ export interface RoadStore {
   chunks: Chunk[];
 }
 
+const initialChunks = Array.from({ length: TOTAL_CHUNKS }, () => getNewChunk());
+
 export const useRoad = create<RoadStore>(() => ({
-  speedRef: { current: 0.001 },
+  speedRef: { current: 0.005 },
   pivotRef: { current: 0 },
-  chunks: [],
+  chunks: initialChunks,
 }));
