@@ -73,3 +73,18 @@ export function useKeyControls() {
     }
   }, [])
 }
+
+export function useKey(key: string, callack: () => void, deps: unknown[] = []) {
+  useEffect(() => {
+    const handleKeydown = ({ key: k }: KeyboardEvent) => {
+      if (k !== key) return
+      callack()
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps)
+
+}

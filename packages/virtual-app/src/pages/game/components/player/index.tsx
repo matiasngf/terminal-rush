@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Car } from "../car";
+import { Car } from "../vehicles/car";
 import { Group } from "three";
 import { useConnector } from "../../../../lib/connector";
 import { useSubscribe } from "../../../../lib/subscribable";
@@ -7,10 +7,8 @@ import { useSubscribe } from "../../../../lib/subscribable";
 import { useGame } from "../../../../lib/use-game";
 import { useFrame } from "@react-three/fiber";
 import { clampLerp, lerp, normalizeDelta, round } from "../../../../lib/math";
+import { lineWidth } from "../road/use-road";
 
-/** Max lines on the road */
-export const LINES = 5;
-const lineWidth = 1.5;
 const maxRotation = Math.PI;
 
 export const Player = () => {
@@ -44,11 +42,11 @@ export const Player = () => {
 
     let difference =
       round(
-        clampLerp(refs.current.position, currentLine, normalizedDelta * 0.08),
+        clampLerp(refs.current.position, currentLine, normalizedDelta * 0.03),
         4
       ) - refs.current.position;
 
-    if (Math.abs(difference) < 0.001) {
+    if (Math.abs(difference) < 0.00001) {
       refs.current.position = currentLine;
     } else {
       difference =
