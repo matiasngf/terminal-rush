@@ -2,12 +2,15 @@
 import { create } from "zustand";
 import { getNewChunk } from "./get-chunk";
 
+/** Max lines on the road */
+export const LINES = 5;
+export const lineWidth = 4;
+
 export const CHUNK_SIZE = 50;
 export const TOTAL_CHUNKS = 5
 
 export interface ChunnkProps {
   id: number;
-  positionShift: number;
 }
 
 export interface Chunk {

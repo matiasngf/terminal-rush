@@ -33,11 +33,9 @@ export const Road = () => {
   return (
     <group ref={groupRef}>
       {chunks.map((chunk, index) => (
-        <chunk.Component
-          id={chunk.id}
-          key={chunk.id}
-          positionShift={-index * CHUNK_SIZE}
-        />
+        <group key={chunk.id} position={[0, 0, -index * CHUNK_SIZE]}>
+          <chunk.Component id={chunk.id} />
+        </group>
       ))}
     </group>
   );
