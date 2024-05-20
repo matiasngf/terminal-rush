@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { Car } from "../vehicles/car";
 import { Group } from "three";
 import { useConnector } from "../../../../lib/connector";
 import { useSubscribe } from "../../../../lib/subscribable";
@@ -8,6 +7,9 @@ import { useGame } from "../../../../lib/use-game";
 import { useFrame } from "@react-three/fiber";
 import { clampLerp, lerp, normalizeDelta, round } from "../../../../lib/math";
 import { lineWidth } from "../road/use-road";
+
+/// TODO: fix this asset
+import { Motorcycle } from "../vehicles/motorcycle";
 
 const maxRotation = Math.PI;
 
@@ -75,5 +77,5 @@ export const Player = () => {
     );
   });
 
-  return <Car ref={carRef} />;
+  return <Motorcycle ref={carRef} />;
 };

@@ -26,11 +26,9 @@ const Scene = () => {
     sizeRef.width = width;
     sizeRef.height = realHeight;
 
-    const aspect = sizeRef.width / sizeRef.height;
-
     pageRef.current?.setViewport({
-      width: Math.floor(aspect * 800),
-      height: 800,
+      width: sizeRef.width,
+      height: sizeRef.height,
     });
   });
 
@@ -47,11 +45,10 @@ const Scene = () => {
     await page.waitForSelector("canvas");
     // Wait for bridge to be ready
     await page.waitForFunction('typeof window.connector !== "undefined"');
-    const aspect = sizeRef.width / sizeRef.height;
 
     page.setViewport({
-      width: Math.floor(aspect * 800),
-      height: 800,
+      width: sizeRef.width,
+      height: sizeRef.height,
     });
 
     // page loaded
