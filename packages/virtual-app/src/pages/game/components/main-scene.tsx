@@ -1,46 +1,41 @@
 import { Player } from "./player";
-import { Debug } from "./debug";
-import { useSearchParams } from "react-router-dom";
 import { Road } from "./road";
 import { PerspectiveCamera } from "@react-three/drei";
-import { type PerspectiveCamera as PerspectiveType } from "three";
-import { useEffect, useState } from "react";
+import { CAMERA_NAMES, useGame } from "../../../lib/use-game";
+import { useSearchParams } from "react-router-dom";
+import { Debug } from "./debug";
+import { degToRad } from "three/src/math/MathUtils.js";
 
 export const MainScene = () => {
+  const activeCameraTop = useGame(
+    (s) => s.activeCamera === CAMERA_NAMES.TOP_DOWN_CAMERA_NAME
+  );
+
   const [searchParams] = useSearchParams();
-
-  const [camera, setCamera] = useState<PerspectiveType | null>(null);
-
-  useEffect(() => {
-    if (!camera) return;
-    camera.lookAt(0, 0, -10);
-    camera.updateProjectionMatrix();
-  }, [camera]);
+  const isDebug = searchParams.has("debug");
 
   return (
     <>
       {/* Background color */}
       <color attach="background" args={["#003c70"]} />
+      {/* Top Camera */}
       <PerspectiveCamera
-        ref={setCamera}
-        makeDefault
-        fov={30}
-        near={10}
-        far={150}
-        position={[0, 7, 20]}
+        makeDefault={activeCameraTop}
+        position={[0, 40, -20]}
+        rotation={[degToRad(-90), degToRad(0), degToRad(90)]}
       />
       <ambientLight intensity={4} />
-      <spotLight
-        position={[0, 10, 10]}
-        angle={0.7}
-        penumbra={0.2}
-        decay={0}
-        intensity={3}
-      />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <Player />
       <Road />
-      {searchParams.has("debug") && <Debug />}
+      {isDebug && <Debug />}
     </>
   );
 };
+
+/** This camerea looks really cool:
+<PerspectiveCamera
+  position={[0, 0, 30]}
+  rotation={[0, degToRad(10), degToRad(10)]}
+/>
+ */

@@ -3,17 +3,29 @@ import { Group } from "three";
 import { useConnector } from "../../../../lib/connector";
 import { useSubscribe } from "../../../../lib/subscribable";
 
-import { useGame } from "../../../../lib/use-game";
+import { CAMERA_NAMES, useGame } from "../../../../lib/use-game";
 import { useFrame } from "@react-three/fiber";
-import { clampLerp, lerp, normalizeDelta, round } from "../../../../lib/math";
+import {
+  clamp,
+  clampLerp,
+  lerp,
+  normalizeDelta,
+  round,
+} from "../../../../lib/math";
 import { lineWidth } from "../road/use-road";
 
 /// TODO: fix this asset
 import { Motorcycle } from "../vehicles/motorcycle";
+import { PerspectiveCamera } from "@react-three/drei";
+import { degToRad } from "three/src/math/MathUtils.js";
 
 const maxRotation = Math.PI;
 
 export const Player = () => {
+  const activeCamera = useGame(
+    (s) => s.activeCamera === CAMERA_NAMES.PLAYER_CAMERA_NAME
+  );
+  const containerRef = useRef<Group | null>(null);
   const carRef = useRef<Group | null>(null);
 
   const refs = useRef({
@@ -44,15 +56,18 @@ export const Player = () => {
 
     let difference =
       round(
-        clampLerp(refs.current.position, currentLine, normalizedDelta * 0.03),
+        clampLerp(refs.current.position, currentLine, normalizedDelta * 0.06),
         4
       ) - refs.current.position;
 
-    if (Math.abs(difference) < 0.00001) {
+    if (Math.abs(difference) < 0.01) {
       refs.current.position = currentLine;
     } else {
       difference =
-        difference > 0 ? Math.min(difference, 1) : Math.max(difference, -1);
+        difference > 0
+          ? clamp(difference, 0.01, 1)
+          : clamp(difference, -1, -0.01);
+
       refs.current.position += difference;
     }
 
@@ -60,22 +75,34 @@ export const Player = () => {
     refs.current.prevPosition = refs.current.position;
 
     //set position
-    carRef.current.position.x = refs.current.position * lineWidth;
+    carRef.current.position.x = round(refs.current.position, 1) * lineWidth;
 
     //set rotations
 
     carRef.current.rotation.z = lerp(
       carRef.current.rotation.z,
-      -direction * maxRotation * 0.2,
-      0.2
+      -direction * maxRotation * 0.5,
+      0.3
     );
 
     carRef.current.rotation.y = lerp(
       carRef.current.rotation.y,
       -direction * maxRotation,
-      0.4
+      0.1
     );
   });
 
-  return <Motorcycle ref={carRef} />;
+  return (
+    <group ref={containerRef}>
+      <PerspectiveCamera
+        makeDefault={activeCamera}
+        fov={30}
+        position={[0, 5, 20]}
+        rotation={[degToRad(-10), 0, 0]}
+      />
+      <group>
+        <Motorcycle ref={carRef} />
+      </group>
+    </group>
+  );
 };

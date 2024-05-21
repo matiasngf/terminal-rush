@@ -15,6 +15,7 @@
     "@react-three/drei": "^9.105.1",
     "@react-three/fiber": "^8.16.1",
     "gsap": "^3.12.5",
+    "leva": "^0.9.35",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
     "react": "^18.2.0",
