@@ -56,28 +56,35 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
     });
 
     return nodes.RootNode;
-  }, [nodes, lightLineMaterial]);
+  }, [nodes, lightLineMaterial, materials]);
+
+  const { position, direction } = useMemo(
+    () => ({
+      position: new Vector3(),
+      direction: new Vector3(),
+    }),
+    []
+  );
 
   useFrame(() => {
     if (!light) return;
-    // calculate direction using the scene global rotation and the light position
-    const p = new Vector3();
-    const direction = scene.getWorldPosition(p);
-    direction.z -= 20;
-
-    light.target.position.copy(p);
+    // calculate direction using vehicle position
+    scene.getWorldPosition(position);
+    scene.getWorldDirection(direction);
+    light.target.position.copy(position).add(direction.multiplyScalar(20));
   });
 
   return (
     <group ref={ref} {...props}>
       <SpotLight
-        position={[0, 1, -5]}
+        position={[0, 1, -4]}
         intensity={20}
         penumbra={1}
         angle={2}
         anglePower={8}
         distance={20}
         decay={0}
+        castShadow={false}
         ref={(r) => {
           if (r) setLight(r);
         }}
