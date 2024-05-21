@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ext": "*",
   "ignore": ["dist/*", "node_modules/*"],
-  "exec": "tsc && vite build"
+  "exec": "vite build"
 }
