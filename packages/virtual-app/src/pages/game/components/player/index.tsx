@@ -23,7 +23,7 @@ const maxRotation = Math.PI;
 
 export const Player = () => {
   const activeCamera = useGame(
-    (s) => s.activeCamera === CAMERA_NAMES.PLAYER_CAMERA_NAME
+    (s) => s.activeCamera === CAMERA_NAMES.PLAYER_CAMERA
   );
   const containerRef = useRef<Group | null>(null);
   const carRef = useRef<Group | null>(null);

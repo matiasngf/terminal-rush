@@ -8,7 +8,7 @@ import { Camera } from "three";
 export const Debug = () => {
   useControls(() => ({
     Camera: {
-      value: CAMERA_NAMES.PLAYER_CAMERA_NAME,
+      value: CAMERA_NAMES.PLAYER_CAMERA,
       options: CAMERA_NAMES,
       onChange: (value: CameraName) => {
         useGame.setState({ activeCamera: value });

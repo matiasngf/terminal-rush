@@ -8,7 +8,7 @@ import { degToRad } from "three/src/math/MathUtils.js";
 
 export const MainScene = () => {
   const activeCameraTop = useGame(
-    (s) => s.activeCamera === CAMERA_NAMES.TOP_DOWN_CAMERA_NAME
+    (s) => s.activeCamera === CAMERA_NAMES.TOP_DOWN_CAMERA
   );
 
   const [searchParams] = useSearchParams();
