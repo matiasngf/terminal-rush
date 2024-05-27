@@ -63,12 +63,8 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
 
     nodes.MeshLine.scale.z = 1.04;
 
-    console.log(nodes);
-
     return nodes.Scene;
   }, [nodes, materials]);
-
-  // return null;
 
   const { position, direction } = useMemo(
     () => ({
