@@ -48,9 +48,6 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
       }
 
       if ("material" in child && child.material === lights) {
-        console.log("replacing");
-        console.log(lightLineMaterial);
-
         child.material = lightLineMaterial;
       }
     });

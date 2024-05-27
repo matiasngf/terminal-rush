@@ -17,7 +17,7 @@ export const MainScene = () => {
   return (
     <>
       {/* Background color */}
-      <color attach="background" args={["#003c70"]} />
+      <color attach="background" args={["#F101A5"]} />
       {/* Top Camera */}
       <PerspectiveCamera
         makeDefault={activeCameraTop}

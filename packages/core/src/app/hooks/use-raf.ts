@@ -30,8 +30,8 @@ const useRafStore = create<UseRafStore>((set, get) => {
 export const useGlobalRafRunner = () => {
   useEffect(() => {
 
-    // 30fps
-    const rafTime = 1000 / 30;
+    // 24fps
+    const rafTime = 1000 / 24;
 
     const abortController = new AbortController();
     const signal = abortController.signal;
@@ -64,14 +64,14 @@ export const useGlobalRafRunner = () => {
   }, [])
 }
 
-export const useRaf = (callback: () => void) => {
+export const useRaf = (callback: () => void, deps: any[] = []) => {
   useEffect(() => {
     const id = useRafStore.getState().registerRafCallback(callback);
     return () => {
       useRafStore.getState().unregisterRafCallback(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, deps)
 }
 
 export const createRaf = (callback: () => void) => {
