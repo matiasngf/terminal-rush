@@ -2,21 +2,45 @@ import { SpotLight, useGLTF } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
 import { forwardRef, useMemo, useState } from "react";
 import {
+  Line,
   LineBasicMaterial,
+  Mesh,
   MeshStandardMaterial,
   SpotLight as SpotLightType,
   Vector3,
   type Group,
 } from "three";
 import { useControls } from "leva";
+import { COLORS } from "../../../../../lib/colors";
+import { type GLTF } from "three-stdlib";
+
+interface MotoNodes extends GLTF {
+  nodes: {
+    MeshLine: Line;
+    SM_Light_Back: Mesh;
+    SM_Light_Circle: Mesh;
+    SM_Light_Front: Mesh;
+    SM_Racer: Mesh;
+    Scene: Group;
+  };
+}
 
 export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
-  const { nodes, materials } = useGLTF("/tron_moto_sdc__free.glb");
+  const { nodes } = useGLTF("/moto.glb") as unknown as MotoNodes;
 
   const [light, setLight] = useState<SpotLightType | null>(null);
 
-  const lightLineMaterial = useMemo(
-    () => new LineBasicMaterial({ color: "#487cff", linewidth: 1 }),
+  const materials = useMemo(
+    () => ({
+      outerBodyMaterial: new MeshStandardMaterial({ color: COLORS.black }),
+      lightsMeshMaterial: new MeshStandardMaterial({
+        color: COLORS.blueLight,
+      }),
+      lightsLineMaterial: new LineBasicMaterial({
+        color: COLORS.blueLight,
+        linewidth: 1,
+      }),
+    }),
     []
   );
 
@@ -24,36 +48,27 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
     lineColor: {
       value: "#487cff",
       onChange: (value: string) => {
-        lightLineMaterial.color.set(value);
+        materials.lightsLineMaterial.color.set(value);
+        materials.lightsMeshMaterial.color.set(value);
       },
     },
   }));
 
   const scene = useMemo(() => {
-    // (materials.material is not used)
+    nodes.SM_Light_Back.material = materials.lightsMeshMaterial;
+    nodes.SM_Light_Circle.material = materials.lightsMeshMaterial;
+    nodes.SM_Light_Front.material = materials.lightsMeshMaterial;
+    nodes.MeshLine.material = materials.lightsLineMaterial;
+    nodes.SM_Racer.material = materials.outerBodyMaterial;
 
-    const outerBody = materials.carosserie as MeshStandardMaterial;
-    outerBody.color.set("#000000");
+    nodes.MeshLine.scale.z = 1.04;
 
-    const centerBand = materials["2_carosserie"] as MeshStandardMaterial;
-    centerBand.color.set("#000000");
+    console.log(nodes);
 
-    const lights = materials["Material.001"] as MeshStandardMaterial;
-    lights.color.set("#ffffff");
-    lights.emissiveIntensity = 1;
+    return nodes.Scene;
+  }, [nodes, materials]);
 
-    nodes.Sketchfab_model.traverse((child) => {
-      if (child.position.x > 0) {
-        child.position.x -= 365;
-      }
-
-      if ("material" in child && child.material === lights) {
-        child.material = lightLineMaterial;
-      }
-    });
-
-    return nodes.RootNode;
-  }, [nodes, lightLineMaterial, materials]);
+  // return null;
 
   const { position, direction } = useMemo(
     () => ({
@@ -86,11 +101,7 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
           if (r) setLight(r);
         }}
       />
-      <group
-        position={[0, 1, 0]}
-        scale={[0.01, 0.01, 0.01]}
-        rotation={[0, Math.PI, 0]}
-      >
+      <group position={[0, 0, 0]} rotation={[0, Math.PI, 0]}>
         <primitive object={scene} />
       </group>
     </group>

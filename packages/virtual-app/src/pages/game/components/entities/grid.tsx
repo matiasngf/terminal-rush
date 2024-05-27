@@ -2,13 +2,13 @@ import { GroupProps, useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import {
   BufferGeometry,
-  Color,
   Float32BufferAttribute,
   LineSegments,
   ShaderMaterial,
   Vector3,
 } from "three";
 import { setMaterialUniforms } from "../../../../lib/uniforms";
+import { COLORS } from "../../../../lib/colors";
 
 export interface GridProps {
   size?: number;
@@ -19,8 +19,8 @@ export interface GridProps {
 
 const gridMaterial = new ShaderMaterial({
   uniforms: {
-    u_color: { value: new Color("#F101A5") },
-    u_color2: { value: new Color("#1AC7E4") },
+    u_color: { value: COLORS.violet },
+    u_color2: { value: COLORS.cyan },
     u_cameraPosition: { value: [0, 0, 0] },
   },
   vertexShader: /* glsl */ `
