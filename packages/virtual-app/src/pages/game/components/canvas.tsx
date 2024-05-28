@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { MainScene } from "./main-scene";
 import { useConnector } from "../../../lib/connector";
 import { WebGLRenderer } from "three";
+import { Renderer } from "./renderer";
 
 export const GameCanvas = () => {
   return (
@@ -24,7 +25,9 @@ export const GameCanvas = () => {
         overflow: "visible",
       }}
     >
-      <MainScene />
+      <Renderer>
+        <MainScene />
+      </Renderer>
     </Canvas>
   );
 };

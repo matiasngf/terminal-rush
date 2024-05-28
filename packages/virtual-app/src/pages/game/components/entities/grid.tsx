@@ -19,8 +19,8 @@ export interface GridProps {
 
 const gridMaterial = new ShaderMaterial({
   uniforms: {
-    u_color: { value: COLORS.violet },
-    u_color2: { value: COLORS.cyan },
+    u_color: { value: COLORS.cyan },
+    u_color2: { value: COLORS.violet },
     u_cameraPosition: { value: [0, 0, 0] },
   },
   vertexShader: /* glsl */ `

@@ -5,6 +5,7 @@ import { CAMERA_NAMES, useGame } from "../../../lib/use-game";
 import { useSearchParams } from "react-router-dom";
 import { Debug } from "./debug";
 import { degToRad } from "three/src/math/MathUtils.js";
+import { COLORS } from "../../../lib/colors";
 
 export const MainScene = () => {
   const activeCameraTop = useGame(
@@ -17,7 +18,10 @@ export const MainScene = () => {
   return (
     <>
       {/* Background color */}
-      <color attach="background" args={["#F101A5"]} />
+      <color
+        attach="background"
+        args={[COLORS.blue.clone().multiplyScalar(0.1)]}
+      />
       {/* Top Camera */}
       <PerspectiveCamera
         makeDefault={activeCameraTop}
