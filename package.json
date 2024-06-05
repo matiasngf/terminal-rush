@@ -9,7 +9,6 @@
   "scripts": {
     "build": "turbo run build",
     "devAll": "turbo run dev",
-    "dev": "pnpm core:dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "core": "turbo run dev --filter=terminal-rush",
@@ -19,7 +18,9 @@
     "virtual-app": "turbo run serve --filter=@terminal-rush/virtual-app",
     "virtual-app:watch": "turbo run dev --filter=@terminal-rush/virtual-app",
     "virtual-app:build": "turbo run build --filter=@terminal-rush/virtual-app",
-    "sandbox": "cd ./apps/sandbox && pnpm dev"
+    "sandbox": "cd ./apps/sandbox && pnpm dev",
+    "virtual-core": "concurrently \"turbo run dev --filter=terminal-rush\" \"turbo run dev --filter=@terminal-rush/virtual-app\"",
+    "dev": "concurrently \"turbo run dev --filter=terminal-rush\" \"turbo run dev --filter=@terminal-rush/virtual-app\" \"turbo run serve --filter=@terminal-rush/virtual-app\""
   },
   "devDependencies": {
     "@terminal-rush/eslint-config-custom": "workspace:*",

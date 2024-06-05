@@ -17,7 +17,7 @@ import { type GLTF } from "three-stdlib";
 
 interface MotoNodes extends GLTF {
   nodes: {
-    MeshLine: Line;
+    SM_Glow_Line: Line;
     SM_Light_Back: Mesh;
     SM_Light_Circle: Mesh;
     SM_Light_Front: Mesh;
@@ -28,8 +28,6 @@ interface MotoNodes extends GLTF {
 
 export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
   const { nodes } = useGLTF("/moto.glb") as unknown as MotoNodes;
-
-  // const [light, setLight] = useState<SpotLightType | null>(null);
 
   const light = useMemo(() => new SpotLightType("white", 20, 30, 0.5), []);
 
@@ -88,10 +86,8 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
     nodes.SM_Light_Back.material = materials.lightsMeshMaterial;
     nodes.SM_Light_Front.material = materials.lightsMeshMaterial;
     nodes.SM_Light_Circle.material = materials.lightsLineMaterial;
-    nodes.MeshLine.material = materials.lightsLineMaterial;
+    nodes.SM_Glow_Line.material = materials.lightsLineMaterial;
     nodes.SM_Racer.material = materials.outerBodyMaterial;
-
-    nodes.MeshLine.scale.z = 1.04;
 
     return nodes.Scene;
   }, [nodes, materials]);
@@ -110,32 +106,14 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
     scene.getWorldPosition(position);
     scene.getWorldDirection(direction);
 
-    // light.position.copy(position);
     light.position.y = 1;
     light.position.z = -6;
-    // light.target.position.copy(position).add(direction.multiplyScalar(20));
 
     light.target.position.copy(direction);
-
-    // light.position.y += 1;
-
-    // light.lookAt(position.add(direction.multiplyScalar(20)));
-    // light.target.position.set(0, 0, 20);
-    // console.log(light.target.position);
   });
 
   return (
     <>
-      {/* <spotLight
-        intensity={10}
-        penumbra={1}
-        distance={20}
-        decay={0.02}
-        castShadow={false}
-        ref={(r) => {
-          if (r) setLight(r);
-        }}
-      /> */}
       <group ref={ref} {...props}>
         <primitive object={light}>
           <primitive object={light.target} />
