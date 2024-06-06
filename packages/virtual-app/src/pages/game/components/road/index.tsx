@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { CHUNK_SIZE, useRoad } from "./use-road";
+import { CHUNK_SIZE, getMovementAmount, useRoad } from "./use-road";
 import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
 import { normalizeDelta } from "../../../../lib/math";
@@ -15,7 +15,7 @@ export const Road = () => {
     if (!group) return;
     const delta = normalizeDelta(d);
 
-    const movementAmout = delta * speedRef.current * CHUNK_SIZE;
+    const movementAmout = getMovementAmount(speedRef.current, delta);
     group.position.z += movementAmout;
     if (group.position.z > CHUNK_SIZE) {
       const diff = CHUNK_SIZE - group.position.z;

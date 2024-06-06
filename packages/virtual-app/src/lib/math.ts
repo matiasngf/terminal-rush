@@ -10,6 +10,10 @@ export const round = (value: number, decimals: number) => {
   return Number(Math.round(Number(value + "e" + decimals)) + "e-" + decimals);
 }
 
+export const roundStep = (value: number, step: number) => {
+  return Math.round(value / step) * step;
+}
+
 export const valueRemap = (value: number, start1: number, stop1: number, start2: number, stop2: number) => {
   return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
 }

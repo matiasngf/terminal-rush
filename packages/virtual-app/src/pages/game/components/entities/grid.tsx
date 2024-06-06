@@ -12,7 +12,7 @@ import { COLORS } from "../../../../lib/colors";
 
 export interface GridProps {
   size?: number;
-  divisions?: number;
+  divisions?: number | [number, number];
   /** Whether to generate the grid final lines */
   caps?: boolean;
 }
@@ -61,29 +61,43 @@ const gridMaterial = new ShaderMaterial({
 
 export const Grid = ({
   size = 1,
-  divisions = 1,
+  divisions: _divisions = 1,
   caps = false,
   ...props
 }: GridProps & GroupProps) => {
   const { camera } = useThree();
   const lineRef = useRef<LineSegments>();
 
+  const [divisionsX, divisionsY] = useMemo(() => {
+    if (Array.isArray(_divisions)) {
+      return _divisions;
+    }
+
+    return [_divisions, _divisions];
+  }, [_divisions]);
+
   const lines = useMemo(() => {
     const points = [];
     const types = [];
 
-    const step = (size * 2) / divisions;
+    const stepX = (size * 2) / divisionsX;
 
-    for (let i = 0; i <= divisions; i++) {
-      const position = -size + i * step;
-
-      points.push(new Vector3(-size, 0, position));
-      points.push(new Vector3(size, 0, position));
-      types.push(1, 1); // horizontal
+    for (let i = 0; i <= divisionsX; i++) {
+      const position = -size + i * stepX;
 
       points.push(new Vector3(position, 0, -size));
       points.push(new Vector3(position, 0, size));
       types.push(0, 0); // vertical
+    }
+
+    const stepY = (size * 2) / divisionsY;
+
+    for (let i = 0; i <= divisionsY; i++) {
+      const position = -size + i * stepY;
+
+      points.push(new Vector3(-size, 0, position));
+      points.push(new Vector3(size, 0, position));
+      types.push(1, 1); // horizontal
     }
 
     if (caps) {
@@ -104,7 +118,7 @@ export const Grid = ({
     const line = new LineSegments(geometry, gridMaterial);
 
     return line;
-  }, [size, divisions, caps]);
+  }, [size, divisionsX, divisionsY, caps]);
 
   useFrame(() => {
     if (lineRef.current) {

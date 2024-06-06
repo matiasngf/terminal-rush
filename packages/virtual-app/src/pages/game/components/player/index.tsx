@@ -97,8 +97,8 @@ export const Player = () => {
       <PerspectiveCamera
         makeDefault={activeCamera}
         fov={30}
-        position={[0, 5, 20]}
-        rotation={[degToRad(-10), 0, 0]}
+        position={[0, 10, 20]}
+        rotation={[degToRad(-20), 0, 0]}
       />
       <group>
         <Motorcycle ref={carRef} />

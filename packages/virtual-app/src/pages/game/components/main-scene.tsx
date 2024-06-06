@@ -4,8 +4,8 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { CAMERA_NAMES, useGame } from "../../../lib/use-game";
 import { useSearchParams } from "react-router-dom";
 import { Debug } from "./debug";
-import { degToRad } from "three/src/math/MathUtils.js";
 import { COLORS } from "../../../lib/colors";
+import { NPCs } from "./npc";
 
 export const MainScene = () => {
   const activeCameraTop = useGame(
@@ -25,13 +25,20 @@ export const MainScene = () => {
       {/* Top Camera */}
       <PerspectiveCamera
         makeDefault={activeCameraTop}
-        position={[0, 40, -20]}
-        rotation={[degToRad(-90), degToRad(0), degToRad(90)]}
+        position={[30, 20, 20]}
+        fov={15}
+        // rotation={[degToRad(0), degToRad(0), degToRad(0)]}
+        ref={(camera) => {
+          if (camera) {
+            camera.lookAt(0, 1.5, 0);
+          }
+        }}
       />
       <ambientLight intensity={4} />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
       <Player />
       <Road />
+      <NPCs />
       {isDebug && <Debug />}
     </>
   );

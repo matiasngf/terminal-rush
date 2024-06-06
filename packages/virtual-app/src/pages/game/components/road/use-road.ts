@@ -6,8 +6,8 @@ import { getNewChunk } from "./get-chunk";
 export const LINES = 5;
 export const lineWidth = 4;
 
-export const CHUNK_SIZE = 50;
-export const TOTAL_CHUNKS = 5
+export const CHUNK_SIZE = LINES * lineWidth;
+export const TOTAL_CHUNKS = 10
 
 export interface ChunnkProps {
   id: number;
@@ -25,10 +25,13 @@ export interface RoadStore {
   chunks: Chunk[];
 }
 
+export const getMovementAmount = (speed: number, delta: number) =>
+  delta * speed * CHUNK_SIZE;
+
 const initialChunks = Array.from({ length: TOTAL_CHUNKS }, () => getNewChunk());
 
 export const useRoad = create<RoadStore>(() => ({
-  speedRef: { current: 0.005 },
+  speedRef: { current: 0.02 },
   pivotRef: { current: 0 },
   chunks: initialChunks,
 }));

@@ -1,4 +1,4 @@
-import { CHUNK_SIZE } from "../use-road";
+import { CHUNK_SIZE, LINES } from "../use-road";
 import { Grid } from "../../entities/grid";
 import { COLORS } from "../../../../../lib/colors";
 
@@ -9,7 +9,11 @@ export const BaseRoad = () => {
         <planeGeometry args={[CHUNK_SIZE, CHUNK_SIZE]} />
         <meshStandardMaterial color={COLORS.blue} />
       </mesh>
-      <Grid position={[0, 0.1, 0]} size={CHUNK_SIZE / 2} divisions={6} />
+      <Grid
+        position={[0, 0.1, 0]}
+        size={CHUNK_SIZE / 2}
+        divisions={[LINES, 2]}
+      />
     </group>
   );
 };

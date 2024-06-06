@@ -11,4 +11,6 @@ export const COLORS = {
   blueLight: new Color("#487cff"),
   cyan: new Color("#1AC7E4"),
   cyanDark: new Color("#1AC7E4").multiplyScalar(0.5),
+
+  redLight: new Color("#FF4D4D"),
 }

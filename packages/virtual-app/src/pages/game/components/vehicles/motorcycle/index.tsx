@@ -2,6 +2,7 @@ import { useGLTF } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
 import { forwardRef, useMemo } from "react";
 import {
+  Color,
   Line,
   Mesh,
   MeshBasicMaterial,
@@ -26,28 +27,33 @@ interface MotoNodes extends GLTF {
   };
 }
 
-export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
-  const { nodes } = useGLTF("/moto.glb") as unknown as MotoNodes;
+export interface MotorcycleProps extends GroupProps {
+  color?: Color;
+}
 
-  const light = useMemo(() => new SpotLightType("white", 20, 30, 0.5), []);
+export const Motorcycle = forwardRef<Group, MotorcycleProps>(
+  ({ color = COLORS.blueLight, ...props }, ref) => {
+    const { nodes } = useGLTF("/moto.glb") as unknown as MotoNodes;
 
-  light.decay = 0.1;
+    const light = useMemo(() => new SpotLightType("white", 20, 30, 0.5), []);
 
-  const materials = useMemo(
-    () => ({
-      outerBodyMaterial: new MeshBasicMaterial({ color: COLORS.black }),
-      lightsMeshMaterial: new MeshPhysicalMaterial({
-        color: COLORS.blueLight,
-        emissive: COLORS.blueLight,
-        emissiveIntensity: 10,
-      }),
-      lightsLineMaterial: new ShaderMaterial({
-        uniforms: {
-          color: { value: COLORS.blueLight },
-          emissive: { value: COLORS.blueLight },
-          emissiveIntensity: { value: 1 },
-        },
-        vertexShader: `
+    light.decay = 0.1;
+
+    const materials = useMemo(
+      () => ({
+        outerBodyMaterial: new MeshBasicMaterial({ color: COLORS.black }),
+        lightsMeshMaterial: new MeshPhysicalMaterial({
+          color: color,
+          emissive: color,
+          emissiveIntensity: 10,
+        }),
+        lightsLineMaterial: new ShaderMaterial({
+          uniforms: {
+            color: { value: color },
+            emissive: { value: color },
+            emissiveIntensity: { value: 1 },
+          },
+          vertexShader: `
           varying vec3 vNormal;
           varying vec3 vPosition;
           void main() {
@@ -56,7 +62,7 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
         `,
-        fragmentShader: `
+          fragmentShader: `
           uniform vec3 color;
           uniform vec3 emissive;
           uniform float emissiveIntensity;
@@ -68,60 +74,69 @@ export const Motorcycle = forwardRef<Group, GroupProps>((props, ref) => {
             gl_FragColor = vec4(color + emissiveColor, 1.0);
           }
         `,
+        }),
       }),
-    }),
-    []
-  );
+      [color]
+    );
 
-  useControls(() => ({
-    lineColor: {
-      value: `#${COLORS.blueLight.getHexString()}`,
-      onChange: (value: string) => {
-        COLORS.blueLight.set(value);
+    useControls(() => ({
+      lineColor: {
+        value: `#${COLORS.blueLight.getHexString()}`,
+        onChange: (value: string) => {
+          COLORS.blueLight.set(value);
+        },
       },
-    },
-  }));
+    }));
 
-  const scene = useMemo(() => {
-    nodes.SM_Light_Back.material = materials.lightsMeshMaterial;
-    nodes.SM_Light_Front.material = materials.lightsMeshMaterial;
-    nodes.SM_Light_Circle.material = materials.lightsLineMaterial;
-    nodes.SM_Glow_Line.material = materials.lightsLineMaterial;
-    nodes.SM_Racer.material = materials.outerBodyMaterial;
+    const scene = useMemo(() => {
+      const copy = nodes.Scene.clone(true);
 
-    return nodes.Scene;
-  }, [nodes, materials]);
+      const SM_Light_Back = copy.getObjectByName("SM_Light_Back") as Mesh;
+      const SM_Light_Front = copy.getObjectByName("SM_Light_Front") as Mesh;
+      const SM_Light_Circle = copy.getObjectByName("SM_Light_Circle") as Mesh;
+      const SM_Glow_Line = copy.getObjectByName("SM_Glow_Line") as Line;
+      const SM_Racer = copy.getObjectByName("SM_Racer") as Mesh;
 
-  const { position, direction } = useMemo(
-    () => ({
-      position: new Vector3(),
-      direction: new Vector3(),
-    }),
-    []
-  );
+      SM_Light_Back.material = materials.lightsMeshMaterial;
+      SM_Light_Front.material = materials.lightsMeshMaterial;
+      SM_Light_Circle.material = materials.lightsMeshMaterial;
+      SM_Glow_Line.material = materials.lightsLineMaterial;
+      SM_Racer.material = materials.outerBodyMaterial;
 
-  useFrame(() => {
-    if (!light) return;
-    // calculate direction using vehicle position
-    scene.getWorldPosition(position);
-    scene.getWorldDirection(direction);
+      return copy;
+    }, [nodes, materials]);
 
-    light.position.y = 1;
-    light.position.z = -6;
+    const { position, direction } = useMemo(
+      () => ({
+        position: new Vector3(),
+        direction: new Vector3(),
+      }),
+      []
+    );
 
-    light.target.position.copy(direction);
-  });
+    useFrame(() => {
+      if (!light) return;
+      // calculate direction using vehicle position
+      scene.getWorldPosition(position);
+      scene.getWorldDirection(direction);
 
-  return (
-    <>
-      <group ref={ref} {...props}>
-        <primitive object={light}>
-          <primitive object={light.target} />
-        </primitive>
-        <group position={[0, 0, 0]} rotation={[0, Math.PI, 0]}>
-          <primitive object={scene} />
+      light.position.y = 1;
+      light.position.z = -6;
+
+      light.target.position.copy(direction);
+    });
+
+    return (
+      <>
+        <group ref={ref} {...props}>
+          <primitive object={light}>
+            <primitive object={light.target} />
+          </primitive>
+          <group position={[0, 0, 0]} rotation={[0, Math.PI, 0]}>
+            <primitive object={scene} />
+          </group>
         </group>
-      </group>
-    </>
-  );
-});
+      </>
+    );
+  }
+);
