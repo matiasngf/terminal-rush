@@ -10,11 +10,11 @@ export const CHUNK_SIZE = LINES * lineWidth;
 export const TOTAL_CHUNKS = 10
 
 export interface ChunnkProps {
-  id: number;
+  id: string;
 }
 
 export interface Chunk {
-  id: number;
+  id: string;
   Component: (props: ChunnkProps) => JSX.Element;
 }
 
