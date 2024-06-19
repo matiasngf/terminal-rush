@@ -17,6 +17,9 @@ export interface GameStore {
   currentLine: number;
   setLine: (line: number) => void;
   addLine: (ammount?: number) => void;
+
+  // debug
+  showHitBoxes: boolean;
 }
 
 
@@ -24,6 +27,7 @@ export const useGame = create<GameStore>((set) => {
   return {
     activeCamera: 'player',
     currentLine: 0,
+    showHitBoxes: false,
     setLine: (line: number) => {
       set({ currentLine: line })
     },

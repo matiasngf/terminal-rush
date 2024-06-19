@@ -1,12 +1,13 @@
 import { useGLTF } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
-import { forwardRef, useMemo } from "react";
+import { ComponentRef, forwardRef, useMemo, useRef, useState } from "react";
 import {
   Color,
   Line,
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
+  Object3D,
   ShaderMaterial,
   SpotLight as SpotLightType,
   Vector3,
@@ -14,7 +15,17 @@ import {
 } from "three";
 import { useControls } from "leva";
 import { COLORS } from "../../../../../lib/colors";
+import {
+  IntersectionEnterHandler,
+  CuboidCollider,
+  RigidBody,
+  RapierRigidBody,
+} from "@react-three/rapier";
 import { type GLTF } from "three-stdlib";
+import { useGame } from "../../../../../lib/use-game";
+import { BoxDebug } from "../../debug/shape-debug";
+import { mergeRefs } from "react-merge-refs";
+import { useTimeout } from "../../../../../hooks/use-timeout";
 
 interface MotoNodes extends GLTF {
   nodes: {
@@ -28,16 +39,19 @@ interface MotoNodes extends GLTF {
 }
 
 export interface MotorcycleProps extends GroupProps {
+  onIntersectionEnter?: IntersectionEnterHandler;
   color?: Color;
 }
 
 export const Motorcycle = forwardRef<Group, MotorcycleProps>(
-  ({ color = COLORS.blueLight, ...props }, ref) => {
+  ({ color = COLORS.blueLight, onIntersectionEnter, ...props }, ref) => {
     const { nodes } = useGLTF("/moto.glb") as unknown as MotoNodes;
-
     const light = useMemo(() => new SpotLightType("white", 20, 30, 0.5), []);
-
     light.decay = 0.1;
+
+    const showHitBoxes = useGame((s) => s.showHitBoxes);
+    const rigidRef = useRef<RapierRigidBody | null>(null);
+    const groupRef = useRef<Object3D | null>(null);
 
     const materials = useMemo(
       () => ({
@@ -53,7 +67,7 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
             emissive: { value: color },
             emissiveIntensity: { value: 1 },
           },
-          vertexShader: `
+          vertexShader: /*glsl*/ `
           varying vec3 vNormal;
           varying vec3 vPosition;
           void main() {
@@ -62,7 +76,7 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
         `,
-          fragmentShader: `
+          fragmentShader: /*glsl*/ `
           uniform vec3 color;
           uniform vec3 emissive;
           uniform float emissiveIntensity;
@@ -88,6 +102,15 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
       },
     }));
 
+    const [activeHitbox, setActiveHitbox] = useState(false);
+
+    useTimeout({
+      callback: () => {
+        setActiveHitbox(true);
+      },
+      delay: 500,
+    });
+
     const scene = useMemo(() => {
       const copy = nodes.Scene.clone(true);
 
@@ -106,29 +129,60 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
       return copy;
     }, [nodes, materials]);
 
-    const { position, direction } = useMemo(
+    const { position, direction, colliderPos } = useMemo(
       () => ({
         position: new Vector3(),
         direction: new Vector3(),
+        colliderPos: new Vector3(),
       }),
       []
     );
+
+    const cuboidRef = useRef<ComponentRef<typeof CuboidCollider> | null>(null);
 
     useFrame(() => {
       if (!light) return;
       // calculate direction using vehicle position
       scene.getWorldPosition(position);
       scene.getWorldDirection(direction);
+      colliderPos.copy(position);
+      colliderPos.y += motoColliderScale[1] / 2;
 
       light.position.y = 1;
       light.position.z = -6;
 
       light.target.position.copy(direction);
+
+      //update rigid
+      if (rigidRef.current) {
+        rigidRef.current.setTranslation(colliderPos, true);
+        rigidRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+        rigidRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      }
     });
 
     return (
       <>
-        <group ref={ref} {...props}>
+        {activeHitbox && (
+          <RigidBody
+            ref={rigidRef}
+            type="dynamic"
+            colliders={false}
+            enabledTranslations={[false, false, false]}
+            enabledRotations={[false, false, false]}
+            position={colliderPos}
+          >
+            <CuboidCollider
+              ref={cuboidRef}
+              sensor
+              args={motoColliderScale}
+              onIntersectionEnter={onIntersectionEnter}
+              position={[0, 0, 0]}
+            />
+            {showHitBoxes && <BoxDebug scale={motoColliderScale} />}
+          </RigidBody>
+        )}
+        <group ref={mergeRefs([ref, groupRef])} {...props}>
           <primitive object={light}>
             <primitive object={light.target} />
           </primitive>
@@ -140,3 +194,5 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
     );
   }
 );
+
+const motoColliderScale = [1.5, 3.5, 3] as [number, number, number];

@@ -7,6 +7,12 @@ import { Camera } from "three";
 
 export const Debug = () => {
   useControls(() => ({
+    showHitboxes: {
+      value: false,
+      onChange: (value: boolean) => {
+        useGame.setState({ showHitBoxes: value });
+      },
+    },
     Camera: {
       value: CAMERA_NAMES.PLAYER_CAMERA,
       options: CAMERA_NAMES,

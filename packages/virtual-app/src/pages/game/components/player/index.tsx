@@ -101,7 +101,13 @@ export const Player = () => {
         rotation={[degToRad(-20), 0, 0]}
       />
       <group>
-        <Motorcycle ref={carRef} />
+        <Motorcycle
+          onIntersectionEnter={(p) => {
+            console.log("intersection");
+            console.log(p);
+          }}
+          ref={carRef}
+        />
       </group>
     </group>
   );

@@ -2,6 +2,7 @@ import { Player } from "./player";
 import { Road } from "./road";
 import { PerspectiveCamera } from "@react-three/drei";
 import { CAMERA_NAMES, useGame } from "../../../lib/use-game";
+import { Physics } from "@react-three/rapier";
 import { useSearchParams } from "react-router-dom";
 import { Debug } from "./debug";
 import { COLORS } from "../../../lib/colors";
@@ -16,7 +17,7 @@ export const MainScene = () => {
   const isDebug = searchParams.has("debug");
 
   return (
-    <>
+    <Physics>
       {/* Background color */}
       <color
         attach="background"
@@ -40,7 +41,7 @@ export const MainScene = () => {
       <Road />
       <NPCs />
       {isDebug && <Debug />}
-    </>
+    </Physics>
   );
 };
 
