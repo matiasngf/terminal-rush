@@ -181,10 +181,6 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
           debug={showHitBoxes}
           onIntersect={onIntersectionEnter}
         />
-        <mesh>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshBasicMaterial color={0xff0000} />
-        </mesh>
         <group ref={mergeRefs([ref, groupRef])} {...props}>
           <primitive object={light}>
             <primitive object={light.target} />
