@@ -23,7 +23,7 @@ export interface SensorInterface {
   id: string;
   active: boolean;
   position: Vector3;
-  scale: Vector3;
+  halfSize: Vector3;
   rotation: Euler;
   /** User data for the sensor */
   data: Record<string | number | symbol, unknown>;
@@ -37,7 +37,7 @@ const sensorsStore: Record<string, SensorInterface> = {};
 
 interface SensorProps {
   position?: Vector3 | [number, number, number];
-  scale?: Vector3 | [number, number, number];
+  halfSize?: Vector3 | [number, number, number];
   rotation?: Euler | [number, number, number];
   active?: boolean;
   onIntersect?: OnIntersectCallback;
@@ -47,7 +47,7 @@ interface SensorProps {
 export const Sensor = forwardRef<SensorInterface, SensorProps>(function Sensor(
   {
     position = [0, 0, 0],
-    scale = [1, 1, 1],
+    halfSize = [1, 1, 1],
     rotation = [0, 0, 0],
     active = true,
     onIntersect,
@@ -58,13 +58,14 @@ export const Sensor = forwardRef<SensorInterface, SensorProps>(function Sensor(
   const sensor = useMemo(() => {
     const positionVec =
       position instanceof Vector3 ? position : new Vector3(...position);
-    const scaleVec = scale instanceof Vector3 ? scale : new Vector3(...scale);
+    const halfSizeVec =
+      halfSize instanceof Vector3 ? halfSize : new Vector3(...halfSize);
     const rotationEuler =
       rotation instanceof Euler ? rotation : new Euler(...rotation);
 
     const obb = new OBB(
       positionVec,
-      scaleVec,
+      halfSizeVec,
       new Matrix3().setFromMatrix4(
         new Matrix4().makeRotationFromEuler(rotationEuler)
       )
@@ -74,7 +75,7 @@ export const Sensor = forwardRef<SensorInterface, SensorProps>(function Sensor(
       id: v4(),
       active,
       position: positionVec,
-      scale: scaleVec,
+      halfSize: halfSizeVec,
       rotation: rotationEuler,
       data: {},
       obb,
@@ -122,12 +123,16 @@ export const Sensor = forwardRef<SensorInterface, SensorProps>(function Sensor(
     // vRefs.current.rotationMatrix4.makeRotationFromEuler(sensor.rotation);
     // vRefs.current.rotationMatrix.setFromMatrix4(vRefs.current.rotationMatrix4);
 
-    sensor.obb.set(sensor.position, sensor.scale, vRefs.current.rotationMatrix);
+    sensor.obb.set(
+      sensor.position,
+      sensor.halfSize,
+      vRefs.current.rotationMatrix
+    );
     sensor.obb.rotation.setFromMatrix4(vRefs.current.rotationMatrix4);
 
     if (debug && debugRef.current) {
       debugRef.current.position.copy(sensor.obb.center);
-      debugRef.current.scale.copy(sensor.scale);
+      debugRef.current.scale.copy(sensor.halfSize).multiplyScalar(2);
       debugRef.current.rotation.copy(sensor.rotation);
     }
 
@@ -155,7 +160,7 @@ export const Sensor = forwardRef<SensorInterface, SensorProps>(function Sensor(
     return (
       <BoxDebug
         position={sensor.position}
-        scale={sensor.scale}
+        scale={0}
         rotation={sensor.rotation}
         ref={debugRef}
       />

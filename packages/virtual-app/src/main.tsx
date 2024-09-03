@@ -3,11 +3,16 @@ import * as ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { GamePage } from "./pages/game";
+import { CollisionPage } from "./pages/collision";
 
 const router = createBrowserRouter([
   {
     path: "/game",
     element: <GamePage />,
+  },
+  {
+    path: "/collision",
+    element: <CollisionPage />,
   },
 ]);
 

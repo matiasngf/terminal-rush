@@ -40,6 +40,15 @@ export interface MotorcycleProps extends GroupProps {
 
 export const Motorcycle = forwardRef<Group, MotorcycleProps>(
   ({ color = COLORS.blueLight, onIntersectionEnter, ...props }, ref) => {
+    useControls(() => ({
+      showHitboxes: {
+        value: false,
+        onChange: (value: boolean) => {
+          useGame.setState({ showHitBoxes: value });
+        },
+      },
+    }));
+
     const { nodes } = useGLTF("/moto.glb") as unknown as MotoNodes;
     const light = useMemo(() => new SpotLightType("white", 20, 30, 0.5), []);
     light.decay = 0.1;
@@ -136,7 +145,7 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
     const sensorRef = useRef<SensorInterface | null>(null);
 
     // I dont wan't the sensor to be active untily its position is correct
-    const [startedSensor, setStartedSendor] = useState(false);
+    const [startedSensor, setStartedSensor] = useState(false);
 
     useFrame(() => {
       if (!light) return;
@@ -148,7 +157,7 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
       rotation.setFromQuaternion(quaterion);
 
       colliderPos.copy(position);
-      colliderPos.y += motoColliderScale[1] / 2;
+      colliderPos.y += motoColliderScale[1];
 
       light.position.y = 1;
       light.position.z = -6;
@@ -156,7 +165,7 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
       light.target.position.copy(direction);
 
       if (!startedRef.current) {
-        setStartedSendor(true);
+        setStartedSensor(true);
         startedRef.current = true;
       }
     });
@@ -166,12 +175,16 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
         <Sensor
           ref={sensorRef}
           position={colliderPos}
-          scale={motoColliderScale}
+          halfSize={motoColliderScale}
           active={startedSensor}
           rotation={rotation}
           debug={showHitBoxes}
           onIntersect={onIntersectionEnter}
         />
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshBasicMaterial color={0xff0000} />
+        </mesh>
         <group ref={mergeRefs([ref, groupRef])} {...props}>
           <primitive object={light}>
             <primitive object={light.target} />
@@ -185,4 +198,8 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
   }
 );
 
-const motoColliderScale = [1.5, 3.5, 9] as [number, number, number];
+const motoColliderScale = [1.5, 3.5, 9].map((s) => s / 2) as [
+  number,
+  number,
+  number,
+];
