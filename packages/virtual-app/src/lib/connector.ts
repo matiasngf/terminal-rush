@@ -51,6 +51,14 @@ export const useConnector = create<ConnectorStore>((set, get) => {
   const right = subscribable()
   const onLose = subscribable()
 
+  onLose.addCallback(() => {
+    const injectedCallback = (window as any).loseCallback as () => void
+
+    if (injectedCallback) {
+      injectedCallback()
+    }
+  })
+
   const controlsDefault = {
     forward: false,
     backward: false,

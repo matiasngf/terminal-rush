@@ -71,8 +71,11 @@ const Scene = () => {
     setSrc(ascii);
   });
 
+  const [gameOver, setGameOver] = useState(false);
+
   const loseCallback = useCallback(() => {
-    process.exit();
+    console.clear();
+    setGameOver(true);
   }, []);
 
   useInput((_input, key) => {
@@ -93,38 +96,41 @@ const Scene = () => {
 
   useEffect(() => {
     if (!pageState) return;
-    const abortController = new AbortController();
-    const { signal } = abortController;
+    // const abortController = new AbortController();
+    // const { signal } = abortController;
 
-    let callbackId: string | null = null;
-    // await pageState.evaluate(() => {
-    //   (window as any).loseCallback = undefined;
-    // });
-
-    // loseCallback();
+    // let callbackId: string | null = null;
 
     pageState.exposeFunction("loseCallback", loseCallback);
 
-    pageState
-      .evaluate(() => {
-        return window.connector
-          .getState()
-          .onLose.addCallback((window as any).loseCallback);
-      })
-      .then((cId) => {
-        if (signal.aborted) return;
-        callbackId = cId;
-      });
+    // pageState
+    //   .evaluate(() => {
+    //     return window.connector
+    //       .getState()
+    //       .onLose.addCallback((window as any).loseCallback);
+    //   })
+    //   .then((cId) => {
+    //     if (signal.aborted) return;
+    //     callbackId = cId;
+    //   });
 
-    return () => {
-      abortController.abort();
-      if (!callbackId) return;
-      pageState.evaluate((id) => {
-        window.connector.getState().onLose.removeCallback(id);
-        // (window as any).loseCallback = undefined;
-      }, callbackId);
-    };
+    // return () => {
+    //   abortController.abort();
+    //   if (!callbackId) return;
+    //   pageState.evaluate((id) => {
+    //     window.connector.getState().onLose.removeCallback(id);
+    //     // (window as any).loseCallback = undefined;
+    //   }, callbackId);
+    // };
   }, [loseCallback, pageState]);
+
+  if (gameOver) {
+    return (
+      <Box>
+        <Text>Game over</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box>
