@@ -1,13 +1,15 @@
-import { Helper } from "@react-three/drei";
-import { MeshProps } from "@react-three/fiber";
-import { BoxHelper } from "three";
+import { LineSegmentsProps } from "@react-three/fiber";
+import { forwardRef } from "react";
+import { BoxGeometry, EdgesGeometry, LineSegments } from "three";
 
-export const BoxDebug = (props: MeshProps) => {
-  return (
-    <mesh {...props}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial visible={false} />
-      <Helper type={BoxHelper} />
-    </mesh>
-  );
-};
+const linegeo = new EdgesGeometry(new BoxGeometry(), 15);
+
+export const BoxDebug = forwardRef<LineSegments, LineSegmentsProps>(
+  (props, ref) => {
+    return (
+      <lineSegments geometry={linegeo} ref={ref} {...props}>
+        <lineBasicMaterial color="yellow" linewidth={2} />
+      </lineSegments>
+    );
+  }
+);

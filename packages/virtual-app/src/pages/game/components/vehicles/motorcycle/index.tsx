@@ -1,13 +1,15 @@
 import { useGLTF } from "@react-three/drei";
 import { GroupProps, useFrame } from "@react-three/fiber";
-import { ComponentRef, forwardRef, useMemo, useRef, useState } from "react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 import {
   Color,
+  Euler,
   Line,
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
   Object3D,
+  Quaternion,
   ShaderMaterial,
   SpotLight as SpotLightType,
   Vector3,
@@ -15,17 +17,10 @@ import {
 } from "three";
 import { useControls } from "leva";
 import { COLORS } from "../../../../../lib/colors";
-import {
-  IntersectionEnterHandler,
-  CuboidCollider,
-  RigidBody,
-  RapierRigidBody,
-} from "@react-three/rapier";
 import { type GLTF } from "three-stdlib";
 import { useGame } from "../../../../../lib/use-game";
-import { BoxDebug } from "../../debug/shape-debug";
 import { mergeRefs } from "react-merge-refs";
-import { useTimeout } from "../../../../../hooks/use-timeout";
+import { OnIntersectCallback, Sensor, SensorInterface } from "../../sensors";
 
 interface MotoNodes extends GLTF {
   nodes: {
@@ -39,7 +34,7 @@ interface MotoNodes extends GLTF {
 }
 
 export interface MotorcycleProps extends GroupProps {
-  onIntersectionEnter?: IntersectionEnterHandler;
+  onIntersectionEnter?: OnIntersectCallback;
   color?: Color;
 }
 
@@ -50,7 +45,6 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
     light.decay = 0.1;
 
     const showHitBoxes = useGame((s) => s.showHitBoxes);
-    const rigidRef = useRef<RapierRigidBody | null>(null);
     const groupRef = useRef<Object3D | null>(null);
 
     const materials = useMemo(
@@ -102,15 +96,6 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
       },
     }));
 
-    const [activeHitbox, setActiveHitbox] = useState(false);
-
-    useTimeout({
-      callback: () => {
-        setActiveHitbox(true);
-      },
-      delay: 500,
-    });
-
     const scene = useMemo(() => {
       const copy = nodes.Scene.clone(true);
 
@@ -129,22 +114,39 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
       return copy;
     }, [nodes, materials]);
 
-    const { position, direction, colliderPos } = useMemo(
+    const {
+      position,
+      direction,
+      colliderPos,
+      startedRef,
+      quaterion,
+      rotation,
+    } = useMemo(
       () => ({
+        startedRef: { current: false },
         position: new Vector3(),
         direction: new Vector3(),
+        quaterion: new Quaternion(),
+        rotation: new Euler(),
         colliderPos: new Vector3(),
       }),
       []
     );
 
-    const cuboidRef = useRef<ComponentRef<typeof CuboidCollider> | null>(null);
+    const sensorRef = useRef<SensorInterface | null>(null);
+
+    // I dont wan't the sensor to be active untily its position is correct
+    const [startedSensor, setStartedSendor] = useState(false);
 
     useFrame(() => {
       if (!light) return;
       // calculate direction using vehicle position
       scene.getWorldPosition(position);
       scene.getWorldDirection(direction);
+      //update rotation
+      scene.getWorldQuaternion(quaterion);
+      rotation.setFromQuaternion(quaterion);
+
       colliderPos.copy(position);
       colliderPos.y += motoColliderScale[1] / 2;
 
@@ -153,35 +155,23 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
 
       light.target.position.copy(direction);
 
-      //update rigid
-      if (rigidRef.current) {
-        rigidRef.current.setTranslation(colliderPos, true);
-        rigidRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
-        rigidRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      if (!startedRef.current) {
+        setStartedSendor(true);
+        startedRef.current = true;
       }
     });
 
     return (
       <>
-        {activeHitbox && (
-          <RigidBody
-            ref={rigidRef}
-            type="dynamic"
-            colliders={false}
-            enabledTranslations={[false, false, false]}
-            enabledRotations={[false, false, false]}
-            position={colliderPos}
-          >
-            <CuboidCollider
-              ref={cuboidRef}
-              sensor
-              args={motoColliderScale}
-              onIntersectionEnter={onIntersectionEnter}
-              position={[0, 0, 0]}
-            />
-            {showHitBoxes && <BoxDebug scale={motoColliderScale} />}
-          </RigidBody>
-        )}
+        <Sensor
+          ref={sensorRef}
+          position={colliderPos}
+          scale={motoColliderScale}
+          active={startedSensor}
+          rotation={rotation}
+          debug={showHitBoxes}
+          onIntersect={onIntersectionEnter}
+        />
         <group ref={mergeRefs([ref, groupRef])} {...props}>
           <primitive object={light}>
             <primitive object={light.target} />
@@ -195,4 +185,4 @@ export const Motorcycle = forwardRef<Group, MotorcycleProps>(
   }
 );
 
-const motoColliderScale = [1.5, 3.5, 3] as [number, number, number];
+const motoColliderScale = [1.5, 3.5, 9] as [number, number, number];

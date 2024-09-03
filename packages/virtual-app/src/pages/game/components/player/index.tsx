@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Group } from "three";
 import { useConnector } from "../../../../lib/connector";
 import { useSubscribe } from "../../../../lib/subscribable";
@@ -92,6 +92,10 @@ export const Player = () => {
     );
   });
 
+  const [gameOver, setGameOver] = useState(false);
+
+  if (gameOver) return null;
+
   return (
     <group ref={containerRef}>
       <PerspectiveCamera
@@ -102,9 +106,9 @@ export const Player = () => {
       />
       <group>
         <Motorcycle
-          onIntersectionEnter={(p) => {
-            console.log("intersection");
-            console.log(p);
+          onIntersectionEnter={() => {
+            useConnector.getState().onLose.runCallbacks();
+            setGameOver(true);
           }}
           ref={carRef}
         />

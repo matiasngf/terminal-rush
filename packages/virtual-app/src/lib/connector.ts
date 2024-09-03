@@ -36,6 +36,7 @@ interface ConnectorStore {
     current: Controls;
   }
   subscribable: Subscribables;
+  onLose: Subscribable
   actions: Actions;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setControl: <T extends ControlKey = any>(control: T, value: Controls[T]) => void;
@@ -48,6 +49,7 @@ export const useConnector = create<ConnectorStore>((set, get) => {
   const forward = subscribable()
   const left = subscribable()
   const right = subscribable()
+  const onLose = subscribable()
 
   const controlsDefault = {
     forward: false,
@@ -63,6 +65,7 @@ export const useConnector = create<ConnectorStore>((set, get) => {
     canvas: null,
     controls: controlsDefault,
     controlsRef: { current: controlsDefault },
+    onLose,
     setControl: (control, value) => {
       get().controlsRef.current[control] = value;
       set((state) => {
