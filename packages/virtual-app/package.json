@@ -28,6 +28,7 @@
     "sort-by": "^1.2.0",
     "three": "^0.163.0",
     "three-stdlib": "^2.29.6",
+    "three.quarks": "^0.15.4",
     "uuid": "^9.0.1",
     "zustand": "^4.4.7"
   },

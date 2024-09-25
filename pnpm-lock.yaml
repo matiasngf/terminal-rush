@@ -281,6 +281,9 @@ importers:
       three-stdlib:
         specifier: ^2.29.6
         version: 2.30.0(three@0.163.0)
+      three.quarks:
+        specifier: ^0.15.4
+        version: 0.15.4(three@0.163.0)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -4384,6 +4387,9 @@ packages:
     resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
     engines: {node: '>=0.6'}
 
+  quarks.core@0.15.4:
+    resolution: {integrity: sha512-pNR8EVLkNNKgA0fQngtQk3EGdH2fJT7a7JJK73tDdW10C4sT7Pt2qpHcv/j8jWigQOFq0SajTPanoZRhxCOsCQ==}
+
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -4920,6 +4926,11 @@ packages:
     resolution: {integrity: sha512-ALL7rn57jq/MovDRk5hGjeWCvOeZlZhFCWIdpbBAQNudCO3nMwxEba5ZulsMgiI1ymQMzUzTMcxhLTCVlUaKDw==}
     peerDependencies:
       three: '>=0.128.0'
+
+  three.quarks@0.15.4:
+    resolution: {integrity: sha512-Gj9pff+KE/7SOtaFN8zL8KZ5K3Of2EhV4UStPNfiQ2vQTGcyxtzN4UQk5xui18xWFG0vBDs2Ejl3DFz/fgu+og==}
+    peerDependencies:
+      three: '>=0.165.0'
 
   three@0.163.0:
     resolution: {integrity: sha512-HlMgCb2TF/dTLRtknBnjUTsR8FsDqBY43itYop2+Zg822I+Kd0Ua2vs8CvfBVefXkBdNDrLMoRTGCIIpfCuDew==}
@@ -9975,6 +9986,8 @@ snapshots:
     dependencies:
       side-channel: 1.0.6
 
+  quarks.core@0.15.4: {}
+
   queue-microtask@1.2.3: {}
 
   queue-tick@1.0.1: {}
@@ -10640,6 +10653,11 @@ snapshots:
       draco3d: 1.5.7
       fflate: 0.6.10
       potpack: 1.0.2
+      three: 0.163.0
+
+  three.quarks@0.15.4(three@0.163.0):
+    dependencies:
+      quarks.core: 0.15.4
       three: 0.163.0
 
   three@0.163.0: {}
