@@ -31,7 +31,7 @@ const keyControlMap = {
   ArrowUp: 'forward',
   a: 'left',
   d: 'right',
-  r: 'reset',
+  r: 'restart',
   s: 'backward',
   w: 'forward',
 } as const satisfies Record<string, ControlKey>
@@ -46,6 +46,9 @@ export const keyCallbacks: Partial<Record<ControlKey, () => void>> = {
   right: () => {
     useConnector.getState().actions.right()
   },
+  restart: () => {
+    useConnector.getState().actions.restart()
+  }
 }
 const keyCodes = Object.keys(keyControlMap) as KeyCode[]
 const isKeyCode = (v: unknown): v is KeyCode => keyCodes.includes(v as KeyCode)

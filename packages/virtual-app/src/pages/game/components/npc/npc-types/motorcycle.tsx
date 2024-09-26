@@ -6,11 +6,14 @@ import { Motorcycle } from "../../vehicles/motorcycle";
 import { CHUNK_SIZE, getMovementAmount, useRoad } from "../../road/use-road";
 import { normalizeDelta } from "../../../../../lib/math";
 import { COLORS } from "../../../../../lib/colors";
+import { useGame } from "../../../../../lib/use-game";
 
 export const MotorcycleNpc = ({ id, startingPosition }: NpcTypeMotorcycle) => {
   const npcPos = useRef(new Vector3(...startingPosition));
   const removeNpc = useNpc((s) => s.removeNpc);
   const vehicleRef = useRef<Group | null>(null);
+
+  const gameOver = useGame((s) => s.gameOver);
 
   const globalSpeedRef = useRoad((s) => s.speedRef);
 
@@ -19,7 +22,14 @@ export const MotorcycleNpc = ({ id, startingPosition }: NpcTypeMotorcycle) => {
 
     const delta = normalizeDelta(d);
 
-    const gridMovement = getMovementAmount(globalSpeedRef.current, delta);
+    let gridMovement = getMovementAmount(globalSpeedRef.current, delta);
+
+    if (gameOver) {
+      gridMovement = -1;
+      if (npcPos.current.z < -CHUNK_SIZE * 4) {
+        removeNpc(id);
+      }
+    }
 
     npcPos.current.z += gridMovement;
 

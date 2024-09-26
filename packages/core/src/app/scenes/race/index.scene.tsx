@@ -96,50 +96,36 @@ const Scene = () => {
 
   useEffect(() => {
     if (!pageState) return;
-    // const abortController = new AbortController();
-    // const { signal } = abortController;
-
-    // let callbackId: string | null = null;
 
     pageState.exposeFunction("loseCallback", loseCallback);
-
-    // pageState
-    //   .evaluate(() => {
-    //     return window.connector
-    //       .getState()
-    //       .onLose.addCallback((window as any).loseCallback);
-    //   })
-    //   .then((cId) => {
-    //     if (signal.aborted) return;
-    //     callbackId = cId;
-    //   });
-
-    // return () => {
-    //   abortController.abort();
-    //   if (!callbackId) return;
-    //   pageState.evaluate((id) => {
-    //     window.connector.getState().onLose.removeCallback(id);
-    //     // (window as any).loseCallback = undefined;
-    //   }, callbackId);
-    // };
   }, [loseCallback, pageState]);
 
-  if (gameOver) {
-    return (
-      <Box>
-        <Text>Game over</Text>
-      </Box>
-    );
-  }
+  useInput((input) => {
+    if (!gameOver) return;
+    if (input === "r") {
+      setGameOver(false);
+      pageRef.current.evaluate(() => {
+        window.connector.getState().actions.restart();
+      });
+    } else {
+      process.exit();
+    }
+  });
 
   return (
     <Box>
       {src ? (
         <Box display="flex" flexDirection="column">
           <Text>{src}</Text>
-          <Text bold color="cyan">
-            Use arrows to move
-          </Text>
+          {gameOver ? (
+            <Text bold backgroundColor="red" color="white">
+              Game over, press any key to exit, R to restart.
+            </Text>
+          ) : (
+            <Text bold color="cyan">
+              Use arrows to move
+            </Text>
+          )}
         </Box>
       ) : (
         <Text>Starting...</Text>

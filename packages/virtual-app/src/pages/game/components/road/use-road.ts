@@ -30,8 +30,10 @@ export const getMovementAmount = (speed: number, delta: number) =>
 
 const initialChunks = Array.from({ length: TOTAL_CHUNKS }, () => getNewChunk());
 
+export const DEFAULT_SPEED = 0.02;
+
 export const useRoad = create<RoadStore>(() => ({
-  speedRef: { current: 0.02 },
+  speedRef: { current: DEFAULT_SPEED },
   pivotRef: { current: 0 },
   chunks: initialChunks,
 }));

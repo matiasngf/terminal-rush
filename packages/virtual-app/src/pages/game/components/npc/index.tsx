@@ -40,7 +40,7 @@ export const NPCs = () => {
   const addNpc = useNpc((state) => state.addNpc);
 
   useInterval({
-    delay: [200, 4000],
+    delay: [200, 2000],
     callback: () => {
       addNpc(getMotorcycle());
     },

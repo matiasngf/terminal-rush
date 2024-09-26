@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Group } from "three";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Group, Vector3 } from "three";
 import { useConnector } from "../../../../lib/connector";
 import { useSubscribe } from "../../../../lib/subscribable";
 
@@ -12,12 +12,12 @@ import {
   normalizeDelta,
   round,
 } from "../../../../lib/math";
-import { lineWidth } from "../road/use-road";
+import { DEFAULT_SPEED, lineWidth, useRoad } from "../road/use-road";
 
-/// TODO: fix this asset
 import { Motorcycle } from "../vehicles/motorcycle";
 import { PerspectiveCamera } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
+import { DeathAnimation } from "./death-animation";
 
 const maxRotation = Math.PI;
 
@@ -27,6 +27,7 @@ export const Player = () => {
   );
   const containerRef = useRef<Group | null>(null);
   const carRef = useRef<Group | null>(null);
+  const carPositionCopy = useMemo(() => new Vector3(), []);
 
   const refs = useRef({
     // position from the last frame
@@ -76,9 +77,9 @@ export const Player = () => {
 
     //set position
     carRef.current.position.x = round(refs.current.position, 1) * lineWidth;
+    carPositionCopy.copy(carRef.current.position);
 
     //set rotations
-
     carRef.current.rotation.z = lerp(
       carRef.current.rotation.z,
       -direction * maxRotation * 0.5,
@@ -92,9 +93,40 @@ export const Player = () => {
     );
   });
 
-  const [gameOver, setGameOver] = useState(false);
+  const gameOver = useGame((s) => s.gameOver);
+  const gameLostRef = useRef(false);
+  const roadSpeedRef = useRoad((s) => s.speedRef);
 
-  if (gameOver) return null;
+  // Reset game
+  useEffect(() => {
+    useConnector.getState().subscribable.restart.addCallback(() => {
+      // reset position and rotation
+      refs.current.position = 0;
+      refs.current.prevPosition = 0;
+      useGame.setState({ currentLine: 0 });
+
+      // reset game over state
+      useGame.setState({ gameOver: false });
+      gameLostRef.current = false;
+      roadSpeedRef.current = DEFAULT_SPEED;
+    });
+  }, [roadSpeedRef]);
+
+  // Handle game lost
+  const onIntersectionEnterCallback = useCallback(() => {
+    if (gameLostRef.current) return;
+    gameLostRef.current = true;
+    useGame.setState({ gameOver: true });
+    setTimeout(() => {
+      useConnector.getState().onLose.runCallbacks();
+    }, 1000);
+  }, []);
+
+  useFrame(() => {
+    if (gameOver) {
+      roadSpeedRef.current = lerp(roadSpeedRef.current, 0, 0.05);
+    }
+  });
 
   return (
     <group ref={containerRef}>
@@ -104,15 +136,18 @@ export const Player = () => {
         position={[0, 10, 20]}
         rotation={[degToRad(-20), 0, 0]}
       />
-      <group>
-        <Motorcycle
-          onIntersectionEnter={() => {
-            useConnector.getState().onLose.runCallbacks();
-            setGameOver(true);
-          }}
-          ref={carRef}
-        />
-      </group>
+      {gameOver ? (
+        <group position={carPositionCopy}>
+          <DeathAnimation />
+        </group>
+      ) : (
+        <group>
+          <Motorcycle
+            onIntersectionEnter={onIntersectionEnterCallback}
+            ref={carRef}
+          />
+        </group>
+      )}
     </group>
   );
 };

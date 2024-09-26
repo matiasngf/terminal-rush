@@ -7,7 +7,7 @@ export interface Controls {
   left: boolean;
   right: boolean;
   brake: boolean;
-  reset: boolean;
+  restart: boolean;
 }
 
 export type ControlKey = keyof Controls;
@@ -18,7 +18,7 @@ export interface Actions {
   left: () => void;
   right: () => void;
   brake: () => void;
-  reset: () => void;
+  restart: () => void;
 }
 
 export type ActionKey = keyof Actions;
@@ -27,6 +27,7 @@ export interface Subscribables {
   forward: Subscribable;
   left: Subscribable;
   right: Subscribable;
+  restart: Subscribable;
 }
 
 interface ConnectorStore {
@@ -50,6 +51,7 @@ export const useConnector = create<ConnectorStore>((set, get) => {
   const left = subscribable()
   const right = subscribable()
   const onLose = subscribable()
+  const restart = subscribable()
 
   onLose.addCallback(() => {
     const injectedCallback = (window as any).loseCallback as () => void
@@ -65,7 +67,7 @@ export const useConnector = create<ConnectorStore>((set, get) => {
     left: false,
     right: false,
     brake: false,
-    reset: false
+    restart: false,
   } satisfies Controls
 
 
@@ -89,6 +91,7 @@ export const useConnector = create<ConnectorStore>((set, get) => {
       forward,
       left,
       right,
+      restart,
     },
     actions: {
       forward: () => {
@@ -102,7 +105,9 @@ export const useConnector = create<ConnectorStore>((set, get) => {
       },
       backward: () => { },
       brake: () => { },
-      reset: () => { },
+      restart: () => {
+        restart.getCallbacks().forEach((cb) => cb());
+      },
     }
   } as const satisfies ConnectorStore;
 });
