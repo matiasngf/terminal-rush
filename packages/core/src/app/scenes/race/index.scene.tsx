@@ -35,7 +35,7 @@ const Scene = () => {
 
   useOnce(async () => {
     // start server
-    const [_server, port] = await startServer(4001);
+    const [_server, port] = await startServer();
     // navigate to page
     const browser = await puppeteer.launch({});
     const page = await browser.newPage();

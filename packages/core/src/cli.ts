@@ -1,17 +1,17 @@
 import { start } from '@/commands/start';
 import { program } from 'commander';
-import { menu } from './commands/menu';
+// import { menu } from './commands/menu';
 
 program
   .name('terminal-rush')
-  .description('To start, run "npx terminal-rush start"')
+  .description('Start racing')
   .version('0.0.1')
-  .action(menu)
-
-program
-  .command('menu')
-  .description('Open the menu racing')
   .action(start)
+
+// program
+//   .command('menu')
+//   .description('Open the menu racing')
+//   .action(start)
 
 program
   .command('start')
@@ -20,7 +20,7 @@ program
 
 program
   .command('multiplayer')
-  .description('Start racing')
+  .description('Soon...')
   .action(() => {
     console.log('Soon...');
   })

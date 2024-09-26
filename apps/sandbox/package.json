@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Sandbox for Terminal Rush",
   "scripts": {
-    "dev": "DEV=true terminal-rush start",
+    "dev": "DEV=true terminal-rush",
     "devtools": "npx react-devtools"
   },
   "dependencies": {
