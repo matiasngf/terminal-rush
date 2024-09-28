@@ -1,10 +1,14 @@
 import path from 'path';
-import { Configuration, IgnorePlugin, ProvidePlugin, BannerPlugin } from "webpack";
+import {
+  Configuration, IgnorePlugin, ProvidePlugin,
+  // BannerPlugin
+} from "webpack";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import nodeExternals from "webpack-node-externals";
 import CopyPlugin from "copy-webpack-plugin";
 import { CreateSymlinkPlugin } from './symlink-plugin';
+import { YogaWasmPathPlugin } from './yoga-wasm';
 
 export type CompileMode = "development" | "production";
 
@@ -20,6 +24,7 @@ const libsToExcludeFromCompilation = [
   "ts-loader",
   "fork-ts-checker-webpack-plugin",
   "react-devtools-core",
+  "yoga-wasm-web",
   // "ink",
   "react",
   "asciify-image",
@@ -76,7 +81,10 @@ export const generateWebpackConfig = ({
     output: {
       path: path.resolve(outputDir),
       filename: 'cli.js',
-      globalObject: "this"
+      globalObject: "this",
+      library: {
+        type: "commonjs2",
+      }
     },
     module: {
       rules: [
@@ -92,7 +100,11 @@ export const generateWebpackConfig = ({
         {
           test: /\.(png|jpe?g|gif|webp)$/i,
           type: 'asset/inline',
-        }
+        },
+        {
+          test: /\.wasm$/,
+          type: "webassembly/async",
+        },
       ]
     },
     devtool: mode === "development" ? "eval-source-map" : false,
@@ -112,14 +124,23 @@ export const generateWebpackConfig = ({
         cleanStaleWebpackAssets: false,
         cleanOnceBeforeBuildPatterns: [path.resolve(outputDir)],
       }),
-      new BannerPlugin({
-        banner: '#!/usr/bin/env node',
-        raw: true,
-      }),
       new ForkTsCheckerWebpackPlugin(),
       new ProvidePlugin({
         "React": "react",
       }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: path.resolve("node_modules/yoga-wasm-web/dist/yoga.wasm"),
+            to: (".")
+          },
+        ]
+      }),
+      new YogaWasmPathPlugin(),
+      // new BannerPlugin({
+      //   banner: '#!/usr/bin/env node',
+      //   raw: true,
+      // }),
     ]
   }
 

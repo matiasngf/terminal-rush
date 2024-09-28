@@ -1,6 +1,6 @@
 {
   "name": "terminal-rush",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "description": "A racing game for your terminal",
   "repository": {
     "type": "git",
@@ -26,18 +26,18 @@
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.0",
     "@swc/core": "^1.3.37",
+    "@terminal-rush/compiler": "workspace:^",
     "@terminal-rush/eslint-config-custom": "workspace:*",
+    "@terminal-rush/virtual-app": "workspace:^0.0.0",
     "@types/express": "^4.17.21",
     "@types/node": "^18.16.3",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.2.22",
+    "@types/three": "^0.162.0",
+    "babel-loader": "^9.1.2",
     "file-loader": "^6.2.0",
     "nodemon": "^3.0.1",
-    "babel-loader": "^9.1.2",
     "react-devtools-core": "^4.19.1",
-    "@terminal-rush/compiler": "workspace:^",
-    "@terminal-rush/virtual-app": "workspace:^0.0.0",
-    "@types/three": "^0.162.0",
     "webpack": "^5.76.1"
   },
   "dependencies": {
@@ -45,7 +45,7 @@
     "commander": "^10.0.0",
     "couleurs": "^6.0.11",
     "express": "^4.18.3",
-    "ink": "^4.4.1",
+    "ink": "^5.0.1",
     "jimp": "^0.22.12",
     "puppeteer": "^22.6.2",
     "react": "^18.2.0",
@@ -53,6 +53,7 @@
     "tunnel-rat": "^0.1.2",
     "utf-8-validate": "^6.0.3",
     "vite": "^5.2.8",
+    "yoga-wasm-web": "^0.3.3",
     "zustand": "^4.4.7"
   },
   "engines": {
