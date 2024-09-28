@@ -1,5 +1,5 @@
 import path from 'path';
-import { Configuration, IgnorePlugin, ProvidePlugin } from "webpack";
+import { Configuration, IgnorePlugin, ProvidePlugin, BannerPlugin } from "webpack";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import nodeExternals from "webpack-node-externals";
@@ -56,7 +56,7 @@ export const generateWebpackConfig = ({
 }: GenerateWebpackConfigOptions) => {
   const config: Configuration = {
     entry: path.resolve("./src/cli.ts"),
-    mode: "development",
+    mode: mode === "development" ? "development" : "production",
     watch: mode === "development",
     target: 'node',
     externalsPresets: { node: true },
@@ -95,6 +95,7 @@ export const generateWebpackConfig = ({
         }
       ]
     },
+    devtool: mode === "development" ? "eval-source-map" : false,
     resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
       alias: {
@@ -111,11 +112,10 @@ export const generateWebpackConfig = ({
         cleanStaleWebpackAssets: false,
         cleanOnceBeforeBuildPatterns: [path.resolve(outputDir)],
       }),
-      // new NormalModuleReplacementPlugin(
-      //   /bindings\/bindings\.js$/,
-      //   path.resolve(__dirname, "static/bindings.js")
-      // ),
-
+      new BannerPlugin({
+        banner: '#!/usr/bin/env node',
+        raw: true,
+      }),
       new ForkTsCheckerWebpackPlugin(),
       new ProvidePlugin({
         "React": "react",
@@ -124,6 +124,8 @@ export const generateWebpackConfig = ({
   }
 
   if (mode === 'production') {
+    console.log("Copying virtual app build...");
+
     // Copy the build of the headless app to the output dir as static files
     const fromStr = path.resolve(("../virtual-app/"), "dist")
     config.plugins.push(
@@ -139,6 +141,7 @@ export const generateWebpackConfig = ({
       })
     )
   } else {
+    console.log("Creating symlink for virtual app...");
     // on dev mode just create a symlink to the virtual app
     config.plugins.push(
       new CreateSymlinkPlugin({
