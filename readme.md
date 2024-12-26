@@ -16,3 +16,5 @@ To handle all of this, I created this monorepo that contains:
 - `packages/compiler`: A package that uses webpack to bundle everything together. It has a "router" so I can create the scenes for the CLI game similar to creating pages on `next.js`.
 - `packages/core`: The CLI package, it uses [react-ink](https://github.com/vadimdemedes/ink) to render the game on the terminal.
 - `apps/sandbox`: A sandbox to test installing and running the game.
+
+[Technical breakdown](https://x.com/matiNotFound/status/1840157741144273393)
